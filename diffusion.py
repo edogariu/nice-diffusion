@@ -268,10 +268,10 @@ class Diffusion:
 
         # If using classifier-free guidance, push eps_pred in the direction unique to its class and
         # away from the base prediction (eq. 6 in CFDG paper):
-        # eps_pred(x_t, c) <- (1 + w) * eps_pred(x_t, c) - w * eps_pred(x_t, -1), where -1 is the null class
+        # eps_pred(x_t, c) <- (1 + w) * eps_pred(x_t, c) - w * eps_pred(x_t, -1), where 0 is the null class
         if self.guidance == 'classifier_free':
             base_eps_pred = self.model(x_t, self.timestep_map[t.long()],
-                                       y=torch.tensor([-1] * eps_pred.shape[0], device=self.device))
+                                       y=torch.tensor([0] * eps_pred.shape[0], device=self.device))
             if self.sampling_var_type == 'learned' or self.sampling_var_type == 'learned_interpolation':
                 base_eps_pred, _ = torch.split(base_eps_pred, int(base_eps_pred.shape[1] / 2), dim=1)
             eps_pred = (1 + self.strength) * eps_pred - self.strength * base_eps_pred
@@ -329,7 +329,7 @@ class Diffusion:
                 eps_pred -= self.strength * grad * extract(self.sqrt_one_minus_alphas_cumprod, t, x_t.shape)
         # If using classifier-free guidance, push eps_pred in the direction unique to its class and
         # away from the base prediction (eq. 6 in CFDG paper):
-        # eps_pred(x_t, c) <- (1 + w) * eps_pred(x_t, c) - w * eps_pred(x_t, -1), where -1 is the null class
+        # eps_pred(x_t, c) <- (1 + w) * eps_pred(x_t, c) - w * eps_pred(x_t, -1), where 0 is the null class
         elif self.guidance == 'classifier_free':
             base_eps_pred = self.model(x_t, self.timestep_map[t.long()],
                                        y=torch.tensor([0] * eps_pred.shape[0], device=self.device))
