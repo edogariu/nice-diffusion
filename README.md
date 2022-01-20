@@ -13,5 +13,5 @@ along with the papers they come from:
   
 Planned improvements:
   - will add script to train a noisy classifier so that classifier-based guidance can actually be used
-  - smarter timestep sampling during training, a la (Dhariwal/Nichol Diffusion Model Beats GAN on Image Synthesis (OpenAI): https://arxiv.org/pdf/2105.05233.pdf)
+  - smarter timestep sampling during training, a la (Dhariwal/Nichol, Diffusion Model Beats GAN on Image Synthesis, https://arxiv.org/pdf/2105.05233.pdf)
   - may add some sampling tricks like truncated or double sampling
