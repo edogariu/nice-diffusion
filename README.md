@@ -1,5 +1,5 @@
 ## nice-diffusion
-#PyTorch implementation of Gaussian Diffusion model, complete with training and sampling scripts.
+# PyTorch implementation of Gaussian Diffusion model, complete with training and sampling scripts.
 Improvements over the seminal Diffusion model (Ho et al., Denoising Diffusion Probabilistic Models, https://arxiv.org/pdf/2006.11239.pdf) are listed below, 
 along with the papers they come from:
   - Rescaled denoising process for fewer steps when sampling: (Dhariwal/Nichol, Improved Denoising Diffusion Probabilistic Models, https://arxiv.org/pdf/2102.09672.pdf)
