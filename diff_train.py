@@ -199,16 +199,16 @@ if __name__ == '__main__':
     LR = 0.00016
     WEIGHT_DECAY = 0.001
 
-    ITERATIONS = 3000
+    ITERATIONS = 18600
     TEST_EVERY = None
     PRINT_EVERY = 10
-    SAVE_EVERY = 200
+    SAVE_EVERY = 800
 
     USE_FP16 = False
     GRAD_ACCUMULATION = 1
 
-    # CHECKPOINT = grab_checkpoint(600)
-    CHECKPOINT = (None, None, None, None)
+    CHECKPOINT = grab_checkpoint(1400)
+    # CHECKPOINT = (None, None, None, None)
     # ------------------------------------------------------------------------------------------------------------------
 
     if DIFFUSION_ARGS['guidance_method'] == 'classifier_free':

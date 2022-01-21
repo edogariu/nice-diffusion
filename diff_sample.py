@@ -16,14 +16,14 @@ device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cp
 # device = torch.device('cpu')
 # torch.manual_seed(0)
 
-STATE_DICT_FILENAME = 'checkpoints/3000_model_params.pt'
+STATE_DICT_FILENAME = 'checkpoints/20000_model_params.pt'
 # STATE_DICT_FILENAME = 'models/64x64_diffusion.pt'
 # STATE_DICT_FILENAME = 'models/128x128_diffusion.pt'
 # STATE_DICT_FILENAME = 'models/256x256_diffusion_uncond.pt'
 
-DIFFUSION_ARGS = {'rescaled_num_steps': 250, 'original_num_steps': 1000, 'use_ddim': False, 'ddim_eta': 0.5}
+DIFFUSION_ARGS = {'rescaled_num_steps': 25, 'original_num_steps': 1000, 'use_ddim': False, 'ddim_eta': 1.0}
 
-BATCH_SIZE = 16
+BATCH_SIZE = 32
 NUM_SAMPLES = 1
 DESIRED_LABELS = [] * NUM_SAMPLES  # set to list of labels (one for each sample) or [] for random label each sample
 
@@ -34,9 +34,9 @@ START_IMG, STEPS_TO_DO = None, 400
 SHOW_PROGRESS = True
 UPSAMPLE = False  # Whether to 4x upsample generated image with Real-ESRGAN (https://github.com/xinntao/Real-ESRGAN)
 
-# NOTE: classifier not implemented yet since I have not yet trained a noisy classifier
-GUIDANCE = None  # can be None, 'classifier', or 'classifier_free'
-GUIDANCE_STRENGTH = 1.0 if GUIDANCE is not None else None
+# NOTE: 'classifier' not implemented yet since I have not yet trained a noisy classifier
+GUIDANCE = 'classifier_free'  # can be None, 'classifier', or 'classifier_free'
+GUIDANCE_STRENGTH = 0.8 if GUIDANCE is not None else None
 
 # ---------------------------------------------------------------------------------------------------------------------
 
@@ -52,7 +52,7 @@ if STATE_DICT_FILENAME.__contains__('_params.pt'):
     MODEL_ARGS = {'resolution': 28, 'attention_resolutions': (7, 14), 'channel_mult': (1, 2, 4),
                   'num_heads': 4, 'in_channels': 1, 'out_channels': 2, 'model_channels': 64,
                   'num_res_blocks': 2, 'split_qkv_first': True, 'dropout': 0.05,
-                  'resblock_updown': True, 'use_adaptive_gn': True, 'num_classes': 10 if CONDITIONAL else None}
+                  'resblock_updown': True, 'use_adaptive_gn': True, 'num_classes': 27 if CONDITIONAL else None}
     state_dict = torch.load(STATE_DICT_FILENAME, map_location="cpu")
 elif STATE_DICT_FILENAME == 'models/64x64_diffusion.pt':
     CONDITIONAL = True

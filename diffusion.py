@@ -272,7 +272,7 @@ class Diffusion:
         if self.guidance == 'classifier_free':
             base_eps_pred = self.model(x_t, self.timestep_map[t.long()],
                                        y=torch.tensor([0] * eps_pred.shape[0], device=self.device))
-            if self.sampling_var_type == 'learned' or self.sampling_var_type == 'learned_interpolation':
+            if self.sampling_var_type == VarType.LEARNED or self.sampling_var_type == VarType.LEARNED_INTERPOLATION:
                 base_eps_pred, _ = torch.split(base_eps_pred, int(base_eps_pred.shape[1] / 2), dim=1)
             eps_pred = (1 + self.strength) * eps_pred - self.strength * base_eps_pred
 
