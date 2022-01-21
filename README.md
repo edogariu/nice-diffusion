@@ -13,7 +13,7 @@ Implemented improvements over the seminal Diffusion model (Ho et al., Denoising 
   - Upscaling after sampling: (Wang et al., Real-ESRGAN: Training Real-World Blind Super-Resolution with Pure Synthetic Data, https://arxiv.org/pdf/2107.10833.pdf)
 
 ## Experiments and Examples
-To demonstrate the model's usefulness and relative ease to train, I trained it with both the 'digits' and 'letters' splits of the EMNIST dataset (https://www.nist.gov/itl/products-and-services/emnist-dataset). The results are highlighted below. Pretrained models are available in the '/checkpoints/' folder, and command line arguments for training and sampling are provided below.
+To demonstrate the model's usefulness and relative ease to train, I trained it with both the 'digits' and 'letters' splits of the EMNIST dataset (https://www.nist.gov/itl/products-and-services/emnist-dataset). The results are highlighted below. Pretrained models are available in the '/checkpoints/' or '/models/' folder, and command line arguments for training and sampling are provided below.
 
 #### Sampling
 For sampling, first ensure that you have a pre-trained model downloaded somewhere, as well as a folder called '/samples/' if you wish to save generated samples and a folder called '/models/' containing the state dict 'RealESRGAN_x4plus.pth' if you wish to upsample. 
