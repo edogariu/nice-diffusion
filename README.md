@@ -23,6 +23,7 @@ The command line statements written below assume that the pre-trained model is m
 # for evan:
   - add saving to diff_sample, and make upsample work for 1-channel images too
   - add scripts for sampling from other pretrained models
+  - add argparser to diff_train
 
 ## Training
 write this
