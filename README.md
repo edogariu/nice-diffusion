@@ -19,7 +19,8 @@ To demonstrate the model's usefulness and relative ease to train, I trained it w
 For sampling, first ensure that you have a pre-trained model downloaded somewhere, as well as a folder called '/samples/' if you wish to save generated samples and a folder called '/models/' containing the state dict 'RealESRGAN_x4plus.pth' if you wish to upsample. 
 
 The command line statements written below assume that the pre-trained model is my EMNIST model and that it is called '20000_model_params.pt' and is located in a folder called '/checkpoints/'.
-for evan:
+
+# for evan:
   - add saving to diff_sample, and make upsample work for 1-channel images too
   - add scripts for sampling from other pretrained models
 
