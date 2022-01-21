@@ -10,7 +10,6 @@ from utils import make_argparser, get_dicts_from_args
 from diff_model import DiffusionModel
 from diffusion import Diffusion
 
-
 def main():
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
