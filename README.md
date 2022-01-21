@@ -15,7 +15,7 @@ Implemented improvements over the seminal Diffusion model (Ho et al., Denoising 
 ## Experiments and Examples
 To demonstrate the model's usefulness and relative ease to train, I trained it with both the 'digits' and 'letters' splits of the EMNIST dataset (https://www.nist.gov/itl/products-and-services/emnist-dataset). The results are highlighted below. Pretrained models are available in the '/checkpoints/' or '/models/' folder, and command line arguments for training and sampling are provided below.
 
-#### Sampling
+## Sampling
 For sampling, first ensure that you have a pre-trained model downloaded somewhere, as well as a folder called '/samples/' if you wish to save generated samples and a folder called '/models/' containing the state dict 'RealESRGAN_x4plus.pth' if you wish to upsample. 
 
 The command line statements written below assume that the pre-trained model is my EMNIST model and that it is called '20000_model_params.pt' and is located in a folder called '/checkpoints/'.
@@ -23,7 +23,7 @@ for evan:
   - add saving to diff_sample, and make upsample work for 1-channel images too
   - add scripts for sampling from other pretrained models
 
-#### Training
+## Training
 write this
   
 ## Planned additions:
