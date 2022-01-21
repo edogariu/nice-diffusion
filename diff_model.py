@@ -1,5 +1,5 @@
 from abc import abstractmethod
-from collections import OrderedDict
+from utils import override
 
 import torch.nn as nn
 import torch.nn.functional as F
@@ -30,10 +30,6 @@ class UsesSteps(nn.Module):
         """
         To be used when forward propagation needs step embeddings
         """
-
-
-def override(a):  # silly function i had to write to use @override, sometimes python can be annoying lol
-    return a
 
 
 # Wrapper sequential class that knows when to pass time step embedding to its children or not
@@ -498,33 +494,3 @@ def timestep_embedding(timesteps, embedding_dim, max_period=10000):
     if embedding_dim % 2 == 1:
         emb = F.pad(emb, (0, 1, 0, 0))
     return emb
-
-
-def convert_state_dict(sd):
-    """
-    Convert state dict from the ones from github.com/openai/guided-diffusion to one compatible with my model.
-    Does not change contents of input state_dict, returns new one.
-    """
-    def convert_param_name(name):
-        name = name.replace('input_blocks', 'downsampling')
-        name = name.replace('output_blocks', 'upsampling')
-        name = name.replace('in_layers.0', 'in_norm')
-        name = name.replace('in_layers.2', 'in_conv')
-        name = name.replace('emb_layers.1', 'step_embedding')
-        name = name.replace('out_layers.0', 'out_norm')
-        name = name.replace('out_layers.3', 'out_conv')
-        name = name.replace('skip_connection', 'skip')
-        name = name.replace('time_embed', 'step_embed')
-        name = name.replace('qkv', 'qkv_nin')
-        name = name.replace('label_emb', 'class_embedding')
-        return name
-
-    new_sd = OrderedDict()
-    for _ in range(len(sd)):
-        key, val = sd.popitem(False)
-        old_key = key
-        key = convert_param_name(key)
-        sd[old_key] = val
-        new_sd[key] = val
-
-    return new_sd

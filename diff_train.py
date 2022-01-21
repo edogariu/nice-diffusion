@@ -1,11 +1,12 @@
 import torch
 import torch.optim as optim
 from torch.utils.data import DataLoader
-from torchvision.datasets import MNIST, EMNIST
+from torchvision.datasets import EMNIST
 import torchvision.transforms as transforms
 import numpy as np
 from matplotlib import pyplot as plt
 
+from utils import Rescale, cycle, grab_checkpoint
 from diff_model import DiffusionModel
 from diffusion import Diffusion
 
@@ -13,25 +14,6 @@ from diffusion import Diffusion
 # ADD SMARTER BETA SCHEDULE SAMPLING
 # ADD DISTRIBUTED TRAINING WITH TORCH.DIST
 # ADD ANNEALED LR?
-
-def grab_checkpoint(step):
-    return ('checkpoints/{}_model_params.pt'.format(step), 'checkpoints/{}_ema_params.pt'.format(step),
-                  'checkpoints/{}_opt_params.pt'.format(step), step)
-
-class Rescale(object):
-    """
-    Rescale tensor image from [0, 1] to [-1, 1].
-    """
-    def __call__(self, im):
-        return 2 * im - 1
-
-def cycle(dataloader):
-    """
-    Changes dataloader from something to be iterated through to something to be cycled through with next().
-    """
-    while True:
-        for data in dataloader:
-            yield data
 
 # class Dataset:
 #     def __init__(self, resolution, batch_size, conditional, random_crop=False, random_flip=True):
@@ -46,7 +28,7 @@ class Trainer:
                  batch_size, lr, weight_decay, ema_rate=0.9999,
                  use_fp16=False, grad_accumulation=1,
                  checkpoint=(None, None, None, None),
-                 print_every=None, test_every=None, save_every=None, device=None):
+                 print_every=None, sample_every=None, save_every=None, device=None):
         # assert model.conditional == dataloader.conditional, 'model and dataloader should be either conditional or not'
 
         self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu') if device is None else device
@@ -87,7 +69,7 @@ class Trainer:
         self.ema_rate = ema_rate
         self.iterations = iterations
         self.print_every = print_every
-        self.test_every = test_every
+        self.sample_every = sample_every
         self.save_every = save_every
 
     def train(self):
@@ -142,16 +124,12 @@ class Trainer:
                       format(step, running_loss.item() / self.print_every))
                 running_loss = torch.tensor([0], dtype=torch.float, device=self.device)
 
-            if self.test_every is not None and step % self.test_every == 0:
+            if self.sample_every is not None and step % self.sample_every == 0:
                 self.sample(4)
 
             if self.save_every is not None and step % self.save_every == 0:
                 self.save(self.start_step + step)
         self.save(self.start_step + self.iterations)
-        pass
-
-    def test(self):
-        # DO THIS, add FID and inception
         pass
 
     def sample(self, num_samples):
@@ -200,7 +178,7 @@ if __name__ == '__main__':
     WEIGHT_DECAY = 0.001
 
     ITERATIONS = 18600
-    TEST_EVERY = None
+    SAMPLE_EVERY = None
     PRINT_EVERY = 10
     SAVE_EVERY = 800
 
@@ -222,6 +200,6 @@ if __name__ == '__main__':
     loader = cycle(DataLoader(train_data, batch_size=BATCH_SIZE, drop_last=True, num_workers=4))
     trainer = Trainer(model=model, diffusion_args=DIFFUSION_ARGS, dataloader=loader, ema_rate=0.9999,
                       batch_size=BATCH_SIZE, lr=LR, weight_decay=WEIGHT_DECAY,
-                      iterations=ITERATIONS, test_every=TEST_EVERY, print_every=PRINT_EVERY, save_every=SAVE_EVERY,
+                      iterations=ITERATIONS, sample_every=SAMPLE_EVERY, print_every=PRINT_EVERY, save_every=SAVE_EVERY,
                       use_fp16=USE_FP16, grad_accumulation=GRAD_ACCUMULATION, checkpoint=CHECKPOINT)
     trainer.train()

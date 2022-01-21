@@ -204,7 +204,7 @@ class Diffusion:
                 progress_bar = tqdm.tqdm
                 indices = progress_bar(reversed(indices), total=steps_to_do)
             else:
-                indices = reversed(indices)
+                indices = list(reversed(indices))
 
             assert len(indices) == steps_to_do
             for t in indices:
