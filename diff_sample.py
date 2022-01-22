@@ -1,12 +1,12 @@
 import sys
 
-import cv2
+# from cv2 import imread, resize
 import numpy as np
 import torch
 import torch.nn.functional as F
 import matplotlib.pyplot as plt
 
-from utils import make_argparser, get_dicts_from_args, imshow
+from utils import make_argparser, get_dicts_from_args, imshow, convert_state_dict
 from diff_model import DiffusionModel
 from diffusion import Diffusion
 
@@ -37,7 +37,6 @@ def main():
 
     model = DiffusionModel(**model_args)
     model.load_state_dict(torch.load(other_args['model_path'], map_location='cpu'), strict=True)
-    torch.save(model.state_dict(), '256x256_diffusion_uncond.pt')
     model.to(device).eval()
 
     if WORDY:
@@ -49,9 +48,9 @@ def main():
     diffusion = Diffusion(model=model, **diff_args)
 
     if START_IMG is not None and STEPS_TO_DO is not None:
-        START_IMG = cv2.imread(START_IMG)
+        START_IMG = imread(START_IMG)
         # may want to replace this resize with a center crop?
-        START_IMG = cv2.resize(START_IMG, dsize=(model_args['resolution'], model_args['resolution'])) / 127.5 - 1
+        START_IMG = resize(START_IMG, dsize=(model_args['resolution'], model_args['resolution'])) / 127.5 - 1
         START_IMG = torch.from_numpy(START_IMG).permute(2, 0, 1)[[2, 1, 0], :, :]
         start_imgs = torch.zeros(size=(BATCH_SIZE, model_args['in_channels'],
                                        model_args['resolution'], model_args['resolution']))
