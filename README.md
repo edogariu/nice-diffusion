@@ -12,10 +12,10 @@ Implemented improvements over the seminal Diffusion model (Ho et al., Denoising 
   - DDIM sampling: (Song et al., Denoising Diffusion Implicit Models, https://arxiv.org/pdf/2010.02502.pdf)
   - Upscaling after sampling: (Wang et al., Real-ESRGAN: Training Real-World Blind Super-Resolution with Pure Synthetic Data, https://arxiv.org/pdf/2107.10833.pdf)
 
-## Experiments and Examples
+# Experiments and Examples
 To demonstrate the model's usefulness and relative ease to train, I trained it with both the 'digits' and 'letters' splits of the EMNIST dataset (https://www.nist.gov/itl/products-and-services/emnist-dataset). The results are highlighted below. Pretrained models and command line arguments for training and sampling are provided in the next sections.
 
-## Sampling
+# Sampling
 Command line interface with diff_sample.py is done by creating variables for the sampling and model arguments. For each pre-trained model, I linked a download of the state_dict, a recommended $SAMPLE_ARGS, and the correct $MODEL_ARGS. Changing the $MODEL_ARGS will break stuff. 
 Here is a list of changes you can make to the $SAMPLE_ARGS to fit it to your uses:
   - --batch_size (INT): replace (INT) with number of images to make each batch
@@ -88,7 +88,7 @@ $MODEL_ARGS=”--resolution 256 --in_channels 3 --model_channels 256 --attention
 python diff_sample.py -w $SAMPLE_ARGS $MODEL_ARGS
 ```
 
-## Training
+# Training
 write this
   
 ## Planned additions:
