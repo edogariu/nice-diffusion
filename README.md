@@ -1,6 +1,6 @@
 ## nice-diffusion
-# Custom PyTorch implementation of Generative Gaussian Diffusion Model
-This is an implementation of a state-of-the-art diffusion model combining different improvements and techniques from various research papers over the past year or two. I did this with the intention of applying it for painting generation and artist style transfer (see https://www.github.com/edogariu/artist-style-transfer), but beacuse of computing limitations (AWS if ur reading this please get back to me lol) I have yet to make it work. However, I tried to make it as general to use for any generative setting (conditional or not), and am working on developing it into a standalone package.
+# PyTorch implementation of Generative Gaussian Diffusion Model
+This is my implementation of a state-of-the-art diffusion model combining different improvements and techniques from various research papers over the past year or two. I did this with the intention of applying it for painting generation and artist style transfer (see https://www.github.com/edogariu/artist-style-transfer), but beacuse of computing limitations (AWS if ur reading this please get back to me lol) I have yet to make it work. However, I tried to make it as general to use for any generative setting (conditional or not), and am working on developing it into a standalone package.
 
 ## Improvements over DDPM
 Implemented improvements over the seminal Diffusion model (Ho et al., Denoising Diffusion Probabilistic Models, https://arxiv.org/pdf/2006.11239.pdf) are listed below, along with the papers they come from:
@@ -30,7 +30,7 @@ Here is a list of changes you can make to the $SAMPLE_ARGS to fit it to your use
   - **_--upsample_**: include this to upsample samples by 4x before displaying/saving (make sure you have the ESRGAN state dict at 'models/RealESRGAN_x4plus.pth'
   - **_--labels (X/Y/Z/...)_**: replace (X/Y/Z/...) with '/'-separated list of labels to use instead of random labels. list must be num_samples long (for example, to create 3 samples with labels 1, 2, and 3 respectively, add '--labels 1/2/3')
 
-The correct $MODEL_ARGS variable is provided under each pre-trained model (and should not be changed), along with a recommended $SAMPLING_ARGS (which you might wanna change the **_--batch_size_** and **_--num_samples_** of and maybe add a save_path). You can sample by cd'ing into nice-diffusion/ and executing the provided commands with whatever modifications you wish to make (you can drop the **_-w_** to stop printing).
+The correct $MODEL_ARGS variable is provided under each pre-trained model (and should not be changed), along with a recommended $SAMPLING_ARGS (which you might wanna change the **_--batch_size_** and **_--num_samples_** of and maybe add a **_--save_path_**). You can sample by cd'ing into 'nice-diffusion/' and executing the provided commands with whatever modifications you wish to make (you can drop the **_-w_** to stop printing).
 
 ### EMNIST
 **Download pre-trained model**: [EMNIST_model_params.pt](www.google.com "Download EMNIST Model")
@@ -58,7 +58,7 @@ python diff_sample.py -w $SAMPLE_ARGS $MODEL_ARGS
 ### OpenAI 64x64 Conditional ImageNet
 **Download pre-trained model**: [64x64_diffusion.pt](www.google.com "Download Converted 64x64 ImageNet Model")
 
-The statements written below assume that the pre-trained model is OpenAI's 64x64 Conditional ImageNet model and that it is called '[64x64_diffusion.pt](www.google.com "Download Converted 64x64 ImageNet Model")' and is located in a folder called 'models/'. If it's somewhere else, please fix the **_--model_path_** argument.
+The statements written below assume that the pre-trained model is OpenAI's 64x64 Conditional ImageNet model (Dhariwal/Nichol, Diffusion Model Beats GAN on Image Synthesis, https://arxiv.org/pdf/2105.05233.pdf) and that it is called '[64x64_diffusion.pt](www.google.com "Download Converted 64x64 ImageNet Model")' and is located in a folder called 'models/'. If it's somewhere else, please fix the **_--model_path_** argument.
 ```PowerShell
 # Terminal 
 # recommended sampling args
@@ -81,7 +81,7 @@ python diff_sample.py -w $SAMPLE_ARGS $MODEL_ARGS
 ### OpenAI 128x128 Conditional ImageNet
 **Download pre-trained model**: [128x128_diffusion.pt](www.google.com "Download Converted 128x128 ImageNet Model")
 
-The statements written below assume that the pre-trained model is OpenAI's 128x128 Conditional ImageNet model and that it is called '[128x128_diffusion.pt](www.google.com "Download Converted 128x128 ImageNet Model")' and is located in a folder called 'models/'. If it's somewhere else, please fix the **_--model_path_** argument.
+The statements written below assume that the pre-trained model is OpenAI's 128x128 Conditional ImageNet model (Dhariwal/Nichol, Diffusion Model Beats GAN on Image Synthesis, https://arxiv.org/pdf/2105.05233.pdf) and that it is called '[128x128_diffusion.pt](www.google.com "Download Converted 128x128 ImageNet Model")' and is located in a folder called 'models/'. If it's somewhere else, please fix the **_--model_path_** argument.
 ```PowerShell
 # Terminal 
 # recommended sampling args
@@ -104,7 +104,7 @@ python diff_sample.py -w $SAMPLE_ARGS $MODEL_ARGS
 ### OpenAI 256x256 Unconditional ImageNet
 **Download pre-trained model**: [256x256_diffusion_uncond.pt](www.google.com "Download Converted 256x256 Unconditional ImageNet Model")
 
-The statements written below assume that the pre-trained model is OpenAI's 256x256 Unonditional ImageNet model and that it is called '[256x256_diffusion_uncond.pt](www.google.com "Download Converted 256x256 Unconditional ImageNet Model")' and is located in a folder called 'models/'. If it's somewhere else, please fix the **_--model_path_** argument.
+The statements written below assume that the pre-trained model is OpenAI's 256x256 Unconditional ImageNet model (Dhariwal/Nichol, Diffusion Model Beats GAN on Image Synthesis, https://arxiv.org/pdf/2105.05233.pdf) and that it is called '[256x256_diffusion_uncond.pt](www.google.com "Download Converted 256x256 Unconditional ImageNet Model")' and is located in a folder called 'models/'. If it's somewhere else, please fix the **_--model_path_** argument.
 ```PowerShell
 # Terminal 
 # recommended sampling args
