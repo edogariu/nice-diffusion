@@ -37,6 +37,15 @@ The correct $MODEL_ARGS variable is provided under each pre-trained model (and s
 
 The statements written below assume that the pre-trained model is my EMNIST model and that it is called '[EMNIST_model_params.pt](www.google.com "Download EMNIST Model")' and is located in a folder called 'models/'. If it's somewhere else, please fix the **_--model_path_** argument.
 ```PowerShell
+# Terminal 
+# recommended sampling args
+SAMPLE_ARGS='--batch_size 8 --num_samples 1 --rescaled_num_steps 25 --model_path models/EMNIST_model_params.pt --guidance_method classifier_free --guidance_strength 0.8'
+# model args
+MODEL_ARGS='--resolution 28 --num_classes 26 --in_channels 1 --model_channels 64 --attention_resolutions 7/14 --channel_mult 1/2/4 --num_res_blocks 2 --num_heads 4 --split_qkv_first --resblock_updown --use_adaptive_gn --beta_schedule cosine --sampling_var_type learned_interpolation'
+# exec
+python diff_sample.py -w $SAMPLE_ARGS $MODEL_ARGS
+```
+```PowerShell
 # PowerShell 
 # recommended sampling args
 $SAMPLE_ARGS=”--batch_size 8 --num_samples 1 --rescaled_num_steps 25 --model_path models/EMNIST_model_params.pt --guidance_method classifier_free --guidance_strength 0.8”
@@ -50,6 +59,15 @@ python diff_sample.py -w $SAMPLE_ARGS $MODEL_ARGS
 **Download pre-trained model**: [64x64_diffusion.pt](www.google.com "Download Converted 64x64 ImageNet Model")
 
 The statements written below assume that the pre-trained model is OpenAI's 64x64 Conditional ImageNet model and that it is called '[64x64_diffusion.pt](www.google.com "Download Converted 64x64 ImageNet Model")' and is located in a folder called 'models/'. If it's somewhere else, please fix the **_--model_path_** argument.
+```PowerShell
+# Terminal 
+# recommended sampling args
+SAMPLE_ARGS='--batch_size 8 --num_samples 1 --rescaled_num_steps 25 --use_ddim --ddim_eta 0.0 --model_path models/64x64_diffusion.pt'
+# model args
+MODEL_ARGS='--resolution 64 --num_classes 1000 --in_channels 3 --model_channels 192 --attention_resolutions 8/16/32 --channel_mult 1/2/3/4 --num_res_blocks 3 --num_head_channels 64 --split_qkv_first --resblock_updown --use_adaptive_gn --beta_schedule cosine --sampling_var_type learned_interpolation'
+# exec
+python diff_sample.py -w $SAMPLE_ARGS $MODEL_ARGS
+```
 ```PowerShell
 # PowerShell 
 # recommended sampling args
@@ -65,6 +83,15 @@ python diff_sample.py -w $SAMPLE_ARGS $MODEL_ARGS
 
 The statements written below assume that the pre-trained model is OpenAI's 128x128 Conditional ImageNet model and that it is called '[128x128_diffusion.pt](www.google.com "Download Converted 128x128 ImageNet Model")' and is located in a folder called 'models/'. If it's somewhere else, please fix the **_--model_path_** argument.
 ```PowerShell
+# Terminal 
+# recommended sampling args
+SAMPLE_ARGS='--batch_size 8 --num_samples 1 --rescaled_num_steps 25 --use_ddim --ddim_eta 0.0 --model_path models/128x128_diffusion.pt'
+# model args
+MODEL_ARGS='--resolution 128 --num_classes 1000 --in_channels 3 --model_channels 256 --attention_resolutions 8/16/32 --channel_mult 1/1/2/3/4 --num_res_blocks 2 --num_heads 4 --resblock_updown --use_adaptive_gn --beta_schedule linear --sampling_var_type learned_interpolation'
+# exec
+python diff_sample.py -w $SAMPLE_ARGS $MODEL_ARGS
+```
+```PowerShell
 # PowerShell 
 # recommended sampling args
 $SAMPLE_ARGS=”--batch_size 8 --num_samples 1 --rescaled_num_steps 25 --use_ddim --ddim_eta 0.0 --model_path models/128x128_diffusion.pt”
@@ -78,6 +105,15 @@ python diff_sample.py -w $SAMPLE_ARGS $MODEL_ARGS
 **Download pre-trained model**: [256x256_diffusion_uncond.pt](www.google.com "Download Converted 256x256 Unconditional ImageNet Model")
 
 The statements written below assume that the pre-trained model is OpenAI's 256x256 Unonditional ImageNet model and that it is called '[256x256_diffusion_uncond.pt](www.google.com "Download Converted 256x256 Unconditional ImageNet Model")' and is located in a folder called 'models/'. If it's somewhere else, please fix the **_--model_path_** argument.
+```PowerShell
+# Terminal 
+# recommended sampling args
+SAMPLE_ARGS='--batch_size 8 --num_samples 1 --rescaled_num_steps 25 --use_ddim --ddim_eta 0.0 --model_path models/256x256_diffusion_uncond.pt'
+# model args
+MODEL_ARGS='--resolution 256 --in_channels 3 --model_channels 256 --attention_resolutions 8/16/32 --channel_mult 1/1/2/2/4/4 --num_res_blocks 2 --num_head_channels 64 --resblock_updown --use_adaptive_gn --beta_schedule linear --sampling_var_type learned_interpolation'
+# exec
+python diff_sample.py -w $SAMPLE_ARGS $MODEL_ARGS
+```
 ```PowerShell
 # PowerShell 
 # recommended sampling args
