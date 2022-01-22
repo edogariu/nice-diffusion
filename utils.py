@@ -137,9 +137,9 @@ def get_dicts_from_args(args):
     Creates model_args and diffusion_args dicts to be passed into constructors for DiffusionModel and Diffusion, as well
     as an extra dict for all other hyperparameters, such as number of samples or learning rate, etc.
     """
-    model_keys = ['resolution', 'attention_resolutions', 'channel_mult', 'num_heads', 'in_channels', 'out_channels',
-                  'model_channels', 'num_res_blocks', 'split_qkv_first', 'dropout',
-                  'resblock_updown', 'use_adaptive_gn', 'num_classes']
+    model_keys = ['resolution', 'attention_resolutions', 'channel_mult', 'num_res_blocks',
+                  'model_channels', 'num_heads', 'num_head_channels', 'in_channels', 'out_channels',
+                  'split_qkv_first', 'dropout', 'resblock_updown', 'use_adaptive_gn', 'num_classes']
     diff_keys = ['rescaled_num_steps', 'original_num_steps', 'use_ddim', 'ddim_eta', 'beta_schedule',
                  'sampling_var_type', 'classifier', 'guidance_method', 'guidance_strength', 'loss_type']
     args = vars(args)
@@ -154,8 +154,8 @@ def get_dicts_from_args(args):
         else:
             other_args[key] = val
 
-    assert (diff_args['guidance_method'] == 'classifier_free' or diff_args['guidance_method'] == 'classifier') == \
-           (model_args['num_classes'] is not None), 'use guidance only for conditional models'
+    assert diff_args['guidance_method'] is None or model_args['num_classes'] is not None, \
+        'use guidance only for conditional models'
     assert (diff_args['guidance_method'] == 'classifier') == (other_args['classifier_path'] is not None)
     if other_args['classifier_path'] is not None:
         raise NotImplementedError('i have not yet implemented a noisy classifier, sorry')

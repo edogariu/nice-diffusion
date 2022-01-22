@@ -264,14 +264,16 @@ class Diffusion:
         x_{t-1}'s.
         If return_x0, also returns the predicted initial image x_0.
         """
-        eps_pred, log_var = self.get_eps_and_log_var(x_t, t, kwargs=kwargs)
+        with torch.no_grad():
+            eps_pred, log_var = self.get_eps_and_log_var(x_t, t, kwargs=kwargs)
 
         # If using classifier-free guidance, push eps_pred in the direction unique to its class and
         # away from the base prediction (eq. 6 in CFDG paper):
         # eps_pred(x_t, c) <- (1 + w) * eps_pred(x_t, c) - w * eps_pred(x_t, -1), where 0 is the null class
         if self.guidance == 'classifier_free':
-            base_eps_pred = self.model(x_t, self.timestep_map[t.long()],
-                                       y=torch.tensor([0] * eps_pred.shape[0], device=self.device))
+            with torch.no_grad():
+                base_eps_pred = self.model(x_t, self.timestep_map[t.long()],
+                                           y=torch.tensor([0] * eps_pred.shape[0], device=self.device))
             if self.sampling_var_type == VarType.LEARNED or self.sampling_var_type == VarType.LEARNED_INTERPOLATION:
                 base_eps_pred, _ = torch.split(base_eps_pred, int(base_eps_pred.shape[1] / 2), dim=1)
             eps_pred = (1 + self.strength) * eps_pred - self.strength * base_eps_pred
@@ -312,7 +314,8 @@ class Diffusion:
         """
         Implement denoising diffusion implicit models (DDIM): https://arxiv.org/pdf/2010.02502.pdf
         """
-        eps_pred = self.model(x_t, self.timestep_map[t.long()], **kwargs)
+        with torch.no_grad():
+            eps_pred = self.model(x_t, self.timestep_map[t.long()], **kwargs)
         if self.sampling_var_type == VarType.LEARNED or self.sampling_var_type == VarType.LEARNED_INTERPOLATION:
             eps_pred, _ = torch.split(eps_pred, int(eps_pred.shape[1] / 2), dim=1)
 
@@ -331,8 +334,9 @@ class Diffusion:
         # away from the base prediction (eq. 6 in CFDG paper):
         # eps_pred(x_t, c) <- (1 + w) * eps_pred(x_t, c) - w * eps_pred(x_t, -1), where 0 is the null class
         elif self.guidance == 'classifier_free':
-            base_eps_pred = self.model(x_t, self.timestep_map[t.long()],
-                                       y=torch.tensor([0] * eps_pred.shape[0], device=self.device))
+            with torch.no_grad():
+                base_eps_pred = self.model(x_t, self.timestep_map[t.long()],
+                                           y=torch.tensor([0] * eps_pred.shape[0], device=self.device))
             if self.sampling_var_type == VarType.LEARNED or self.sampling_var_type == VarType.LEARNED_INTERPOLATION:
                 base_eps_pred, _ = torch.split(base_eps_pred, int(base_eps_pred.shape[1] / 2), dim=1)
             eps_pred = (1 + self.strength) * eps_pred - self.strength * base_eps_pred

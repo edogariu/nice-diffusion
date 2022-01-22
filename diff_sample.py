@@ -1,16 +1,23 @@
+import sys
+
 import cv2
 import numpy as np
 import torch
 import torch.nn.functional as F
 import matplotlib.pyplot as plt
 
-from utils import make_argparser, get_dicts_from_args, imshow
+from utils import make_argparser, get_dicts_from_args, imshow, convert_state_dict
 from diff_model import DiffusionModel
 from diffusion import Diffusion
 
 def main():
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
+    # Parse command line arguments
+    for _ in range(len(sys.argv)):
+        temp = sys.argv.pop(0)
+        for arg in temp.split(' '):
+            sys.argv.append(arg)
     parser = make_argparser('diff_sample')
     args = parser.parse_args()
     other_args, model_args, diff_args = get_dicts_from_args(args)
@@ -28,7 +35,8 @@ def main():
     SAVE_PATH = other_args['save_path']
 
     model = DiffusionModel(**model_args)
-    model.load_state_dict(torch.load(other_args['model_path'], map_location='cpu'), strict=True)
+    model.load_state_dict(convert_state_dict(torch.load(other_args['model_path'], map_location='cpu')), strict=True)
+    torch.save(model.state_dict(), '256x256_diffusion_uncond.pt')
     model.to(device).eval()
 
     if WORDY:
@@ -171,30 +179,7 @@ if __name__ == '__main__':
 # ------------------------------------------------------------------------------------------------------------------
 # CODE STASH SO I REMEMBER THE HYPERPARAMETERS FOR SOME OF THE PRETRAINED MODELS
 # ------------------------------------------------------------------------------------------------------------------
-# # CREATE MODEL(S)
-# if GUIDANCE == 'classifier':
-#     raise NotImplementedError('sorry, i haven\'t yet trained a noisy classifier! :)')
-#
-# if STATE_DICT_FILENAME.__contains__('_params.pt'):
-#     CONDITIONAL = True
-#     DIFF_ARGS = {'beta_schedule': 'cosine', 'sampling_var_type': 'learned_interpolation', 'classifier': None,
-#                  'guidance_method': GUIDANCE if CONDITIONAL else None, 'guidance_strength': GUIDANCE_STRENGTH,
-#                  'loss_type': 'hybrid', 'device': device}
-#     MODEL_ARGS = {'resolution': 28, 'attention_resolutions': (7, 14), 'channel_mult': (1, 2, 4),
-#                   'num_heads': 4, 'in_channels': 1, 'out_channels': 2, 'model_channels': 64,
-#                   'num_res_blocks': 2, 'split_qkv_first': True, 'dropout': 0.05,
-#                   'resblock_updown': True, 'use_adaptive_gn': True, 'num_classes': 27 if CONDITIONAL else None}
-#     state_dict = torch.load(STATE_DICT_FILENAME, map_location="cpu")
-# elif STATE_DICT_FILENAME == 'models/64x64_diffusion.pt':
-#     CONDITIONAL = True
-#     DIFF_ARGS = {'beta_schedule': 'cosine', 'sampling_var_type': 'learned_interpolation', 'classifier': None,
-#                  'guidance_method': GUIDANCE if CONDITIONAL else None, 'guidance_strength': GUIDANCE_STRENGTH,
-#                  'loss_type': 'hybrid', 'device': device}
-#     MODEL_ARGS = {'resolution': 64, 'attention_resolutions': (8, 16, 32), 'channel_mult': (1, 2, 3, 4),
-#                   'num_head_channels': 64, 'in_channels': 3, 'out_channels': 6, 'model_channels': 192,
-#                   'num_res_blocks': 3, 'split_qkv_first': True,
-#                   'resblock_updown': True, 'use_adaptive_gn': True, 'num_classes': 1000 if CONDITIONAL else None}
-#     state_dict = convert_state_dict(torch.load(STATE_DICT_FILENAME, map_location="cpu"))
+
 # elif STATE_DICT_FILENAME == 'models/128x128_diffusion.pt':
 #     CONDITIONAL = True
 #     DIFF_ARGS = {'beta_schedule': 'linear', 'sampling_var_type': 'learned_interpolation', 'classifier': None,
