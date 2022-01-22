@@ -13,15 +13,14 @@ Implemented improvements over the seminal Diffusion model (Ho et al., Denoising 
   - Upscaling after sampling: (Wang et al., Real-ESRGAN: Training Real-World Blind Super-Resolution with Pure Synthetic Data, https://arxiv.org/pdf/2107.10833.pdf)
 
 ## Experiments and Examples
-To demonstrate the model's usefulness and relative ease to train, I trained it with both the 'digits' and 'letters' splits of the EMNIST dataset (https://www.nist.gov/itl/products-and-services/emnist-dataset). The results are highlighted below. Pretrained models are available in the '/checkpoints/' or '/models/' folder, and command line arguments for training and sampling are provided below.
+To demonstrate the model's usefulness and relative ease to train, I trained it with both the 'digits' and 'letters' splits of the EMNIST dataset (https://www.nist.gov/itl/products-and-services/emnist-dataset). The results are highlighted below. Pretrained models are available in the 'checkpoints/' or 'models/' folder, and command line arguments for training and sampling are provided below.
 
 ## Sampling
-For sampling, first ensure that you have a pre-trained model downloaded somewhere, as well as a folder called '/samples/' if you wish to save generated samples and a folder called '/models/' containing the state dict 'RealESRGAN_x4plus.pth' if you wish to upsample. 
+For sampling, first ensure that you have a pre-trained model downloaded somewhere, as well as a folder called 'samples/' if you wish to save generated samples (rather than display them) and a folder called 'models/' containing the state dict 'RealESRGAN_x4plus.pth' if you wish to upsample. 
 
-The command line statements written below assume that the pre-trained model is my EMNIST model and that it is called '20000_model_params.pt' and is located in a folder called '/checkpoints/'.
+The command line statements written below assume that the pre-trained model is my EMNIST model and that it is called '20000_model_params.pt' and is located in a folder called 'checkpoints/'.
 
 # for evan:
-  - add saving to diff_sample, and make upsample work for 1-channel images too
   - add scripts for sampling from other pretrained models
   - add argparser to diff_train
 
@@ -36,3 +35,4 @@ write this
   - smarter timestep sampling during training, a la (Dhariwal/Nichol, Diffusion Model Beats GAN on Image Synthesis, https://arxiv.org/pdf/2105.05233.pdf)
   - may add some sampling tricks like truncated or double sampling during denoising
   - annealed LR during training?
+  - smarter respacing (more steps in beginning, etc)

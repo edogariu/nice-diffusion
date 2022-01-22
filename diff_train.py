@@ -82,7 +82,7 @@ class Trainer:
 
             # batch = torch.randn(self.batch_size, 3, self.model.resolution, self.model.resolution, device=self.device)
             # labels = torch.randint(low=0, high=self.model.num_classes, size=(self.batch_size,), device=self.device)
-            batch = batch.permute(0, 1, 3, 2).to(self.device)
+            batch = batch.permute(0, 1, 3, 2).to(self.device)  # added because EMNIST is in w,h instead of h,w
             labels = labels.to(self.device)
 
             # Change labels to null label with probability 1% during training if we are using classifier-free guidance

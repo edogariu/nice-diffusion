@@ -1,5 +1,7 @@
 from collections import OrderedDict
 import argparse
+import matplotlib.pyplot as plt
+import numpy as np
 
 def make_argparser(prog):
     """
@@ -206,6 +208,12 @@ def convert_state_dict(sd):
 
     return new_sd
 
+# Show image (img must be RGB and from [0.0, 1.0] or [0, 255])
+def imshow(img, title=None, colormap=None):
+    plt.imshow(img.astype(np.uint8), cmap=colormap)
+    if title is not None:
+        plt.title(title)
+    plt.pause(0.001)
 
 def grab_checkpoint(step):
     """
