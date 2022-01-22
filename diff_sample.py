@@ -4,8 +4,6 @@ import torch
 import torch.nn.functional as F
 import matplotlib.pyplot as plt
 
-from basicsr.archs.rrdbnet_arch import RRDBNet
-
 from utils import make_argparser, get_dicts_from_args, imshow
 from diff_model import DiffusionModel
 from diffusion import Diffusion
@@ -99,6 +97,8 @@ def main():
         else:
             print('Saving {} generated images to \'{}\'!'.format(NUM_SAMPLES * BATCH_SIZE, SAVE_PATH))
     if UPSAMPLE:
+        from basicsr.archs.rrdbnet_arch import RRDBNet  # lazy import because this is not a common package to have
+
         if WORDY:
             print('Upsampling to {}x{} resolution!'.format(model_args['resolution'] * 4, model_args['resolution'] * 4))
         model.to(torch.device('cpu'))  # deallocate diffusion model memory

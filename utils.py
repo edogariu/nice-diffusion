@@ -115,7 +115,7 @@ def make_argparser(prog):
                            help='method to use for learning sampling variances. can be \'small\', \'large\', '
                                 '\'learned\', or \'learned_interpolation\'')
     diff_args.add_argument('--use_ddim', required=False, default=False, action='store_true',
-                           help='whether to use DDIM sampling')
+                           help='add this to use DDIM sampling')
     diff_args.add_argument('--ddim_eta', type=float, required=False, default=0.0, metavar=o,
                            help='eta value to use for DDIM sampling')
     diff_args.add_argument('--original_num_steps', type=int, required=False, default=1000, metavar=o,
