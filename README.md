@@ -33,7 +33,7 @@ Here is a list of changes you can make to the $SAMPLE_ARGS to fit it to your use
 The correct $MODEL_ARGS variable is provided under each pre-trained model (and should not be changed), along with a recommended $SAMPLING_ARGS (which you might wanna change the --batch_size and --num_samples of and maybe add a save_path). You can sample by cd'ing into nice-diffusion/ and executing the provided commands with whatever modifications you wish to make (you can drop the -w to stop printing).
 
 ### EMNIST
-Download pre-trained model: [EMNIST_model_params.pt](www.google.com "Download EMNIST Model")
+**Download pre-trained model**: [EMNIST_model_params.pt](www.google.com "Download EMNIST Model")
 
 The statements written below assume that the pre-trained model is my EMNIST model and that it is called '[EMNIST_model_params.pt](www.google.com "Download EMNIST Model")' and is located in a folder called 'models/'. If it's somewhere else, please fix the --model_path argument.
 ```PowerShell
@@ -47,7 +47,7 @@ python diff_sample.py -w $SAMPLE_ARGS $MODEL_ARGS
 ```
 
 ### OpenAI 64x64 Conditional ImageNet
-Download pre-trained model: [64x64_diffusion.pt](www.google.com "Download Converted 64x64 ImageNet Model")
+**Download pre-trained model**: [64x64_diffusion.pt](www.google.com "Download Converted 64x64 ImageNet Model")
 
 The statements written below assume that the pre-trained model is OpenAI's 64x64 Conditional ImageNet model and that it is called '[64x64_diffusion.pt](www.google.com "Download Converted 64x64 ImageNet Model")' and is located in a folder called 'models/'. If it's somewhere else, please fix the --model_path argument.
 ```PowerShell
@@ -61,7 +61,7 @@ python diff_sample.py -w $SAMPLE_ARGS $MODEL_ARGS
 ```
 
 ### OpenAI 128x128 Conditional ImageNet
-[128x128_diffusion.pt](www.google.com "Download Converted 128x128 ImageNet Model")
+**Download pre-trained model**: [128x128_diffusion.pt](www.google.com "Download Converted 128x128 ImageNet Model")
 
 The statements written below assume that the pre-trained model is OpenAI's 128x128 Conditional ImageNet model and that it is called '[128x128_diffusion.pt](www.google.com "Download Converted 128x128 ImageNet Model")' and is located in a folder called 'models/'. If it's somewhere else, please fix the --model_path argument.
 ```PowerShell
@@ -75,7 +75,7 @@ python diff_sample.py -w $SAMPLE_ARGS $MODEL_ARGS
 ```
 
 ### OpenAI 256x256 Unconditional ImageNet
-[256x256_diffusion_uncond.pt](www.google.com "Download Converted 256x256 Unconditional ImageNet Model")
+**Download pre-trained model**: [256x256_diffusion_uncond.pt](www.google.com "Download Converted 256x256 Unconditional ImageNet Model")
 
 The statements written below assume that the pre-trained model is OpenAI's 256x256 Unonditional ImageNet model and that it is called '[256x256_diffusion_uncond.pt](www.google.com "Download Converted 256x256 Unconditional ImageNet Model")' and is located in a folder called 'models/'. If it's somewhere else, please fix the --model_path argument.
 ```PowerShell
