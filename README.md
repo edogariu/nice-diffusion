@@ -18,7 +18,7 @@ To demonstrate the model's usefulness and relative ease to train, I trained it w
 ## Sampling
 Command line interface with diff_sample.py is done by creating variables for the sampling and model arguments. For each pre-trained model, I linked a download of the state_dict, a recommended $SAMPLE_ARGS, and the correct $MODEL_ARGS. Changing the $MODEL_ARGS will break stuff. 
 Here is a list of changes you can make to the $SAMPLE_ARGS to fit it to your uses:
-  - --batch_size (INT): replace (INT) with number of images to use each batch
+  - --batch_size (INT): replace (INT) with number of images to make each batch
   - --num_samples (INT): replace (INT) with number of batches to generate. total number of samples made will be batch_size * num_samples
   - --rescaled_num_steps (INT): replace (INT) with number of steps you want each denoising process to take
   - --use_ddim: include this to use DDIM sampling (useful for when rescaled_num_steps is small)
