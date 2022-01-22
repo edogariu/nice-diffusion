@@ -31,7 +31,7 @@ def make_argparser(prog):
         sampling.add_argument('--upsample', required=False, default=False, action='store_true',
                               help='add to use Real-ESRGAN (https://arxiv.org/abs/2107.10833) for '
                                    '4x superresolution')
-        sampling.add_argument('--wordy', '--w', dest='wordy', required=False, default=False, action='store_true',
+        sampling.add_argument('--wordy', '-w', dest='wordy', required=False, default=False, action='store_true',
                               help='add this to print status')
         sampling.add_argument('--save_path', type=str, required=False, metavar=o, default=None,
                               help='relative file path to save generated images. if not provided, they will be '
@@ -61,7 +61,7 @@ def make_argparser(prog):
                               help='number of iterations to train for')
         training.add_argument('--resume_step', type=int, required=False, metavar=o, default=0,
                               help='step to resume training at. loads correct checkpoint from /checkpoints/ folder')
-        training.add_argument('--wordy', '--w', dest='wordy', required=False, default=False, action='store_true',
+        training.add_argument('--wordy', '-w', dest='wordy', required=False, default=False, action='store_true',
                               help='add this to print status')
         training.add_argument('--save_every', type=int, required=False, metavar=o, default=None,
                               help='how often to save checkpoint in /checkpoints/ folder. defaults to not saving')
