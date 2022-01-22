@@ -16,9 +16,31 @@ Implemented improvements over the seminal Diffusion model (Ho et al., Denoising 
 To demonstrate the model's usefulness and relative ease to train, I trained it with both the 'digits' and 'letters' splits of the EMNIST dataset (https://www.nist.gov/itl/products-and-services/emnist-dataset). The results are highlighted below. Pretrained models are available in the 'checkpoints/' or 'models/' folder, and command line arguments for training and sampling are provided below.
 
 ## Sampling
-For sampling, first ensure that you have a pre-trained model downloaded somewhere, as well as a folder called 'samples/' if you wish to save generated samples (rather than display them) and a folder called 'models/' containing the state dict 'RealESRGAN_x4plus.pth' if you wish to upsample. 
+Command line interface with diff_sample.py is done by creating variables for the sampling, model, and diffusion arguments. 
 
-The command line statements written below assume that the pre-trained model is my EMNIST model and that it is called '20000_model_params.pt' and is located in a folder called 'checkpoints/'.
+First ensure that you have a pre-trained model downloaded somewhere (specified by --model_path argument in $SAMPLE_ARGS), as well as a folder to save generated samples rather than display them (specified by --save_path argument in $SAMPLE_ARGS) and a folder called 'models/' containing the state dict 'RealESRGAN_x4plus.pth' if you wish to upsample (specified by --upsample in $SAMPLE_ARGS).
+
+You can change the batch_size, num_samples, rescaled_num_steps, and add a save_path in $SAMPLING_ARGS. If you don't want to use DDIM sampling, exclude the --use_ddim flag. Similarly, if you don't want to use sampling guidance, exclude the --guidance_method and --guidance_strength flags. If you wish to 4x upsample the outputs, add --upsample to $SAMPLING_ARGS.
+
+The correct $MODEL_ARGS and $DIFF_ARGS variables are provided under each pre-trained model, along with a recommended $SAMPLING_ARGS (which you might wanna change the --batch_size and --num_samples of and maybe add a save_path). Once you've made, you can sample by cd'ing into nice-diffusion/ and executing the following (you can drop the -w to stop printing):
+```PowerShell
+python diff_sample.py -w $SAMPLE_ARGS $MODEL_ARGS $DIFF_ARGS
+```
+
+### EMNIST
+The statements written below assume that the pre-trained model is my EMNIST model and that it is called 'EMNIST_model_params.pt' and is located in a folder called 'models/'. If it's somewhere else, please fix the --model_path argument.
+```PowerShell
+# PowerShell - recommended sampling args
+$SAMPLE_ARGS=”--batch_size 8 --num_samples 1 --rescaled_num_steps 25 --model_path models/EMNIST_model_params.pt --guidance_method classifier_free --guidance_strength 0.8”
+```
+```PowerShell
+# PowerShell - model args
+$MODEL_ARGS=”--resolution 28 --num_classes 26 --in_channels 1 --model_channels 64 --attention_resolutions 7/14 --channel_mult 1/2/4 --num_res_blocks 2 --split_qkv_first --resblock_updown --use_adaptive_gn”
+```
+```PowerShell
+# PowerShell - diffusion args
+$DIFF_ARGS=”--beta_schedule cosine --sampling_var_type learned_interpolation”
+```
 
 # for evan:
   - add scripts for sampling from other pretrained models
