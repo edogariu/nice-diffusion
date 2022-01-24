@@ -13,7 +13,7 @@ Implemented improvements over the seminal Diffusion model (Ho et al., Denoising 
   - Upscaling after sampling: (Wang et al., Real-ESRGAN: Training Real-World Blind Super-Resolution with Pure Synthetic Data, https://arxiv.org/pdf/2107.10833.pdf)
 
 # Experiments and Examples
-To demonstrate the model's usefulness and relative ease to train, I trained it with both the 'digits' and 'letters' splits of the EMNIST dataset (https://www.nist.gov/itl/products-and-services/emnist-dataset). The results are highlighted below. Pretrained models and command line arguments for training and sampling are provided in the next sections.
+To demonstrate the model's usefulness and relative ease to train, I trained it with both the 'digits' and 'letters' splits of the [EMNIST dataset](https://www.nist.gov/itl/products-and-services/emnist-dataset). The results are highlighted below. Pretrained models and command line arguments for training and sampling are provided in the next sections.
 
 # Sampling
 Command line interface with diff_sample.py is done by creating variables for the sampling and model arguments. For each pre-trained model, I linked a download of the state_dict, a recommended $SAMPLE_ARGS, and the correct $MODEL_ARGS. Changing the $MODEL_ARGS will break stuff. 
