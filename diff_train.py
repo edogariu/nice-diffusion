@@ -26,7 +26,7 @@ from diffusion import Diffusion
 class Trainer:
     def __init__(self, model, diffusion_args, dataloader, iterations,
                  batch_size, lr, weight_decay, ema_rate=0.9999,
-                 use_fp16=False, grad_accumulation=1,
+                 grad_accumulation=1,
                  checkpoint=(None, None, None, None),
                  print_every=None, sample_every=None, save_every=None, device=None):
         # assert model.conditional == dataloader.conditional, 'model and dataloader should be either conditional or not'
@@ -35,9 +35,6 @@ class Trainer:
         self.model = model
         self.model.to(self.device)
 
-        self.use_fp16 = use_fp16 and torch.cuda.is_available()
-        if self.use_fp16:
-            self.scaler = torch.cuda.amp.GradScaler()
         self.grad_accumulation = grad_accumulation
 
         self.train_diffusion = Diffusion(**diffusion_args, model=model)
@@ -97,22 +94,12 @@ class Trainer:
             t = torch.randint(low=0, high=self.train_diffusion.original_num_steps, size=(self.batch_size,),
                               device=self.device)
 
-            if self.use_fp16:
-                with torch.cuda.amp.autocast():
-                    loss = self.train_diffusion.loss(x_0=batch, t=t, kwargs=kwargs)
-                    loss = loss.mean()
-                self.scaler.scale(loss / self.grad_accumulation).backward()
-                if (step + 1) % self.grad_accumulation == 0:
-                    self.scaler.step(self.opt)
-                    self.opt.zero_grad(set_to_none=True)
-                    self.scaler.update()
-            else:
-                loss = self.train_diffusion.loss(x_0=batch, t=t, kwargs=kwargs)
-                loss = loss.mean() / self.grad_accumulation
-                if (step + 1) % self.grad_accumulation == 0:
-                    loss.backward()
-                    self.opt.step()
-                    self.opt.zero_grad(set_to_none=True)
+            loss = self.train_diffusion.loss(x_0=batch, t=t, kwargs=kwargs)
+            loss = loss.mean() / self.grad_accumulation
+            if (step + 1) % self.grad_accumulation == 0:
+                loss.backward()
+                self.opt.step()
+                self.opt.zero_grad(set_to_none=False)
             running_loss += loss
 
             # update EMA -- ema <= rate * ema + (1 - rate) * current
@@ -129,6 +116,7 @@ class Trainer:
 
             if self.save_every is not None and step % self.save_every == 0:
                 self.save(self.start_step + step)
+
         self.save(self.start_step + self.iterations)
         pass
 
@@ -173,26 +161,25 @@ if __name__ == '__main__':
                   'num_res_blocks': 2, 'split_qkv_first': True, 'dropout': 0.05,
                   'resblock_updown': True, 'use_adaptive_gn': True, 'num_classes': 26 if CONDITIONAL else None}
 
-    BATCH_SIZE = 128
+    BATCH_SIZE = 468
     LR = 0.00016
     WEIGHT_DECAY = 0.001
 
-    ITERATIONS = 18600
+    ITERATIONS = 1500
     SAMPLE_EVERY = None
     PRINT_EVERY = 10
-    SAVE_EVERY = 800
+    SAVE_EVERY = 100
 
-    USE_FP16 = False
     GRAD_ACCUMULATION = 1
 
-    CHECKPOINT = grab_checkpoint(1400)
-    # CHECKPOINT = (None, None, None, None)
+    # CHECKPOINT = grab_checkpoint(20000)
+    CHECKPOINT = (None, None, None, None)
     # ------------------------------------------------------------------------------------------------------------------
 
     if DIFFUSION_ARGS['guidance_method'] == 'classifier_free':
         MODEL_ARGS['num_classes'] += 1
 
-    model = DiffusionModel(**MODEL_ARGS)
+    model = DiffusionModel(**MODEL_ARGS, use_grad_checkpoints=True)
     print('Model has {} parameters'.format(sum(p.numel() for p in model.parameters())))
 
     transform = transforms.Compose([transforms.ToTensor(), Rescale()])
@@ -201,5 +188,5 @@ if __name__ == '__main__':
     trainer = Trainer(model=model, diffusion_args=DIFFUSION_ARGS, dataloader=loader, ema_rate=0.9999,
                       batch_size=BATCH_SIZE, lr=LR, weight_decay=WEIGHT_DECAY,
                       iterations=ITERATIONS, sample_every=SAMPLE_EVERY, print_every=PRINT_EVERY, save_every=SAVE_EVERY,
-                      use_fp16=USE_FP16, grad_accumulation=GRAD_ACCUMULATION, checkpoint=CHECKPOINT)
+                      grad_accumulation=GRAD_ACCUMULATION, checkpoint=CHECKPOINT)
     trainer.train()

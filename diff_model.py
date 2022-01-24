@@ -1,10 +1,13 @@
 from abc import abstractmethod
-from utils import override
+from utils import checkpoint, override
 
 import torch.nn as nn
 import torch.nn.functional as F
 import torch
 import math
+
+import torch.utils
+import torch.utils.checkpoint
 
 '''
 DIFFUSION MODEL BASED ON THE FOLLOWING PAPERS AND CORRESPONDING WORK:
@@ -120,6 +123,7 @@ class ResidualBlock(UsesSteps):
             - use_conv (bool): if out_channels != in_channels and this is True, use 3x3 convolution to
             - change number of channels
             - use_adaptive_gn (bool): whether to use step embedding to scale and shift input or simply add them
+            - use_grad_checkpoints (bool): whether to use grad checkpointing, which lowers memory but raises computation
             - dropout (double): dropout probability
 
         Returns:
@@ -127,13 +131,14 @@ class ResidualBlock(UsesSteps):
     """
 
     def __init__(self, in_channels, step_channels, dropout, upsample=False, downsample=False,
-                 use_conv=False, out_channels=None, use_adaptive_gn=False):
+                 use_conv=False, out_channels=None, use_adaptive_gn=False, use_grad_checkpoints=False):
         super(ResidualBlock, self).__init__()
 
         self.use_conv = use_conv
         self.use_adaptive_gn = use_adaptive_gn
         self.silu = nn.SiLU()
         out_channels = out_channels if out_channels is not None else in_channels
+        self.use_grad_checkpoints = use_grad_checkpoints
 
         if upsample:
             self.h_resample = Upsample(in_channels=in_channels, with_conv=False)
@@ -171,6 +176,9 @@ class ResidualBlock(UsesSteps):
         self.dropout = nn.Dropout(dropout)
 
     def forward(self, x, step):
+        return checkpoint(self._forward, (x, step), self.parameters(), self.use_grad_checkpoints)
+
+    def _forward(self, x, step):
         h = x
         h = self.silu(self.in_norm(h))
         if self.resample:
@@ -236,8 +244,11 @@ class AttentionBlock(nn.Module):
         self.proj_out = zero_module(nn.Conv1d(in_channels=channels, out_channels=channels,
                                               kernel_size=(1,), stride=(1,)))
 
-    # My implementation of MHA
     def forward(self, x):
+        return checkpoint(self._forward, (x,), self.parameters(), True)  # always checkpoint on attention blocks
+
+    # My implementation of MHA
+    def _forward(self, x):
         # compute 2-D attention (condense H,W dims into N)
         B, C, H, W = x.shape
         x = x.reshape(B, C, -1)
@@ -290,6 +301,7 @@ class DiffusionModel(nn.Module):
             - num_head_channels (int): number of channels to use for each head for AttentionBlocks, supersedes num_heads
             - use_adaptive_gn (bool): whether to use Adaptive GroupNorm with step & class embeddings in ResidualBlocks
             - split_qkv_first (bool): whether to split qkv first or split heads first during attention
+            - use_grad_checkpoints (bool): whether to use grad checkpointing, which lowers memory but raises computation
             - dropout (double): dropout probability in the ResidualBlocks
 
         Returns:
@@ -312,7 +324,8 @@ class DiffusionModel(nn.Module):
             num_head_channels=None,
             resblock_updown=False,
             use_adaptive_gn=False,
-            split_qkv_first=True
+            split_qkv_first=True,
+            use_grad_checkpoints=False
     ):
         super(DiffusionModel, self).__init__()
         self.resolution = resolution
@@ -349,7 +362,7 @@ class DiffusionModel(nn.Module):
                 # num_res_blocks residual blocks per level, plus an attention layer if specified
                 layers = [ResidualBlock(in_channels=curr_channels, step_channels=step_embed_dim, dropout=dropout,
                                         out_channels=int(model_channels * mult),
-                                        use_adaptive_gn=use_adaptive_gn)]
+                                        use_adaptive_gn=use_adaptive_gn, use_grad_checkpoints=use_grad_checkpoints)]
                 curr_channels = int(model_channels * mult)
 
                 # Add attention layer if specified to be added at this downsampling
@@ -368,7 +381,7 @@ class DiffusionModel(nn.Module):
                     self.downsampling.append(UsesStepsSequential(
                         ResidualBlock(in_channels=curr_channels, step_channels=step_embed_dim, dropout=dropout,
                                       out_channels=output_channels, downsample=True,
-                                      use_adaptive_gn=use_adaptive_gn)))
+                                      use_adaptive_gn=use_adaptive_gn, use_grad_checkpoints=use_grad_checkpoints)))
                 else:
                     self.downsampling.append(UsesStepsSequential(
                         Downsample(in_channels=curr_channels, out_channels=output_channels, with_conv=conv_resample)))
@@ -378,12 +391,12 @@ class DiffusionModel(nn.Module):
                 self._feature_size += curr_channels
 
         # Middle blocks - residual, attention, residual
-        layers = [ResidualBlock(in_channels=curr_channels, step_channels=step_embed_dim,
-                                dropout=dropout, use_adaptive_gn=use_adaptive_gn),
+        layers = [ResidualBlock(in_channels=curr_channels, step_channels=step_embed_dim, dropout=dropout,
+                                use_adaptive_gn=use_adaptive_gn, use_grad_checkpoints=use_grad_checkpoints),
                   AttentionBlock(channels=curr_channels, split_qkv_first=split_qkv_first,
                                  num_heads=num_heads, num_head_channels=num_head_channels),
                   ResidualBlock(in_channels=curr_channels, step_channels=step_embed_dim, dropout=dropout,
-                                use_adaptive_gn=use_adaptive_gn)]
+                                use_adaptive_gn=use_adaptive_gn, use_grad_checkpoints=use_grad_checkpoints)]
         self.middle_block = UsesStepsSequential(*layers)
         self._feature_size += curr_channels
 
@@ -395,7 +408,8 @@ class DiffusionModel(nn.Module):
                 skip_channels = input_block_channels.pop()
                 layers = [ResidualBlock(in_channels=curr_channels + skip_channels,  # append for skip connections
                                         step_channels=step_embed_dim, use_adaptive_gn=use_adaptive_gn,
-                                        dropout=dropout, out_channels=int(model_channels * mult))]
+                                        dropout=dropout, out_channels=int(model_channels * mult),
+                                        use_grad_checkpoints=use_grad_checkpoints)]
                 curr_channels = int(model_channels * mult)
                 if curr_res in attention_resolutions:
                     layers.append(AttentionBlock(channels=curr_channels, split_qkv_first=split_qkv_first,
@@ -407,7 +421,8 @@ class DiffusionModel(nn.Module):
                     if resblock_updown:
                         layers.append(ResidualBlock(in_channels=curr_channels, step_channels=step_embed_dim,
                                                     dropout=dropout, out_channels=output_channels,
-                                                    upsample=True, use_adaptive_gn=use_adaptive_gn))
+                                                    upsample=True, use_adaptive_gn=use_adaptive_gn,
+                                                    use_grad_checkpoints=use_grad_checkpoints))
                     else:
                         layers.append(Upsample(in_channels=curr_channels, out_channels=output_channels,
                                                with_conv=conv_resample))
@@ -440,6 +455,7 @@ class DiffusionModel(nn.Module):
 
         # middle block (res, attn, res)
         x = self.middle_block(x, embedding)
+
         # output and upsampling
         for module in self.upsampling:
             # Concatenate for skip connections from before the downsampling layers

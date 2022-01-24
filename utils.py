@@ -1,8 +1,14 @@
+from abc import ABC
 from collections import OrderedDict
 import argparse
 import matplotlib.pyplot as plt
 import numpy as np
+import torch.autograd
 
+
+# ----------------------------------------------------------------------------------------------------------------------
+# Argument parsing
+# ----------------------------------------------------------------------------------------------------------------------
 def make_argparser(prog):
     """
     Creates argparser for specified program.
@@ -182,6 +188,54 @@ def get_dicts_from_args(args):
     return other_args, model_args, diff_args
 
 
+# ----------------------------------------------------------------------------------------------------------------------
+# Gradient checkpointing - not saving intermediate activations to conserve cuda memory
+# ----------------------------------------------------------------------------------------------------------------------
+def checkpoint(module, inputs, parameters, use_grad_checkpoints):
+    """
+    Evaluates the output of a module without storing the intermediate activations. This reduces memory consumption
+    but requires additional computation in the backward pass, increasing computation time.
+
+        Parameters:
+            - module (nn.Module): the module to apply gradient checkpointing on
+            - inputs (iterable of tensors): iterable of the inputs to apply the module with
+            - parameters (iterable of tensors): iterable of all the module's parameters
+            - use_grad_checkpoints (bool): whether to apply checkpointing or just evaluate normally
+
+    """
+    if use_grad_checkpoints:
+        args = tuple(inputs) + tuple(parameters)  # concatenate inputs and parameters to pass as one input
+        return CheckpointFunction.apply(module, len(inputs), *args)
+    else:
+        return module(*inputs)
+
+class CheckpointFunction(torch.autograd.Function):
+    """
+    Reimplementation of PyTorch's checkpointing code, changed to take two inputs (x and step) and also to not care
+    about preserving the RNG state.
+    """
+    @staticmethod
+    def forward(ctx, func, length, *args):
+        ctx.func = func
+        ctx.inputs = list(args[:length])
+        ctx.parameters = list(args[length:])
+        with torch.no_grad():
+            outputs = ctx.func(*ctx.inputs)
+        return outputs
+
+    @staticmethod
+    def backward(ctx, *grad_outputs):
+        ctx.inputs = [x.detach().requires_grad_(True) for x in ctx.inputs]
+        with torch.enable_grad():
+            shallow_copies = [x.view_as(x) for x in ctx.inputs]
+            outputs = ctx.func(*shallow_copies)
+        grad_inputs = torch.autograd.grad(outputs, ctx.inputs + ctx.parameters, grad_outputs, allow_unused=True)
+        del ctx.inputs, ctx.parameters, outputs
+        return (None, None) + grad_inputs
+
+# ----------------------------------------------------------------------------------------------------------------------
+# Miscellaneous
+# ----------------------------------------------------------------------------------------------------------------------
 def convert_state_dict(sd):
     """
     Convert state dict from the ones from github.com/openai/guided-diffusion to one compatible with my model.
@@ -220,7 +274,7 @@ def imshow(img, title=None, colormap=None):
 
 def grab_checkpoint(step):
     """
-    Returns tuple of paths representing a checkpoint from given training step.
+    Returns tuple of paths representing a saved model checkpoint from given training step.
     """
     return ('checkpoints/{}_model_params.pt'.format(step), 'checkpoints/{}_ema_params.pt'.format(step),
             'checkpoints/{}_opt_params.pt'.format(step), step)
