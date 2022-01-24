@@ -47,7 +47,7 @@ def main():
 
         print('Starting Diffusion! There are {} samples of {} images each'.format(NUM_SAMPLES, BATCH_SIZE))
     samples = []
-    diffusion = Diffusion(model=model, **diff_args)
+    diffusion = Diffusion(model=model, **diff_args, device=device)
 
     if START_IMG is not None and STEPS_TO_DO is not None:
         START_IMG = imread(START_IMG)
@@ -101,7 +101,7 @@ def main():
                 START_IMG = ((START_IMG + 1) * 127.5).clamp(0, 255)
                 samples.append((START_IMG.cpu(), out, labels.cpu()))
             else:
-                samples.append((data, out, labels.cpu()))
+                samples.append((data, out, labels.cpu() if labels is not None else labels))
 
     if WORDY:
         if SAVE_PATH is None:
@@ -151,7 +151,10 @@ def main():
                 fig.add_subplot(1, 2, 1)
                 imshow(data[b], title='Denoising Input')
                 fig.add_subplot(1, 2, 2)
-                imshow(out[b], title='Output Image, Label={}'.format(labels[b].detach().item()))
+                if labels is not None:
+                    imshow(out[b], title='Output Image, Label={}'.format(labels[b].detach().item()))
+                else:
+                    imshow(out[b], title='Output Image')
                 plt.waitforbuttonpress()
     else:  # Save
         if model_args['num_classes'] is not None:  # for conditional
