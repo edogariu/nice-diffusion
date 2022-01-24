@@ -17,7 +17,7 @@ To demonstrate the model's usefulness and relative ease to train, I trained it w
 
 # Sampling
 Command line interface with diff_sample.py is done by creating variables for the sampling and model arguments. For each pre-trained model, I linked a download of the state_dict, a recommended $SAMPLE_ARGS, and the correct $MODEL_ARGS. Changing the $MODEL_ARGS will break stuff. 
-Here is a list of changes you can make to the $SAMPLE_ARGS to fit it to your uses:
+Here is a list of changes to the arguments in $SAMPLE_ARGS that you can make to fit it to your uses:
   - **_--batch_size (INT)_**: replace (INT) with number of images to make each batch
   - **_--num_samples (INT)_**: replace (INT) with number of batches to generate. total number of samples made will be batch_size * num_samples
   - **_--rescaled_num_steps (INT)_**: replace (INT) with number of steps you want each denoising process to take
@@ -30,7 +30,7 @@ Here is a list of changes you can make to the $SAMPLE_ARGS to fit it to your use
   - **_--upsample_**: include this to upsample samples by 4x before displaying/saving (make sure you have the ESRGAN state dict at 'models/RealESRGAN_x4plus.pth'
   - **_--labels (X/Y/Z/...)_**: replace (X/Y/Z/...) with '/'-separated list of labels to use instead of random labels. list must be num_samples long (for example, to create 3 samples with labels 1, 2, and 3 respectively, add '--labels 1/2/3')
 
-The correct $MODEL_ARGS variable is provided under each pre-trained model (and should not be changed), along with a recommended $SAMPLING_ARGS (which you might wanna change the **_--batch_size_** and **_--num_samples_** of and maybe add a **_--save_path_**). You can sample by cd'ing into 'nice-diffusion/' and executing the provided commands with whatever modifications you wish to make (you can drop the **_-w_** to stop printing).
+The correct $MODEL_ARGS variable is provided under each pre-trained model (and should not be changed), along with a recommended $SAMPLING_ARGS (which you might wanna change the **_--batch_size_** and **_--num_samples_** of and maybe add a **_--save_path_**). You can sample by cd'ing into 'nice-diffusion/' and executing the provided commands with whatever modifications you wish to make (you can drop the **_-w_** to not print updates during sampling).
 
 ### EMNIST
 **Download pre-trained model**: [EMNIST_model_params.pt](www.google.com "Download EMNIST Model")
