@@ -107,7 +107,6 @@ write this
 ## Planned additions:
   - will add script to train a noisy classifier so that classifier-based sampling guidance can actually be used
   - will add distributed training to allow cloud training
-  - will add gradient checkpointing to conserve memory
   - will wrap into a complete pip-able package
   - smarter timestep sampling during training, a la (Dhariwal/Nichol, Diffusion Model Beats GAN on Image Synthesis, https://arxiv.org/pdf/2105.05233.pdf)
   - may add some sampling tricks like truncated or double sampling during denoising
