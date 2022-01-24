@@ -1,6 +1,6 @@
 ## nice-diffusion
 # PyTorch implementation of Generative Gaussian Diffusion Model
-This is my implementation of an advanced, improved diffusion model combining different techniques from various research papers over the past couple years. I did this with the intention of applying it for painting generation and artist style transfer (see https://www.github.com/edogariu/artist-style-transfer), but beacuse of computing limitations (AWS if ur reading this please get back to me lol) I have yet to make it work. However, I tried to make it as general to use for any generative setting (conditional or not), and am working on developing it into a standalone package.
+This is my implementation of an advanced, improved diffusion model combining different techniques from various research papers over the past couple years. I did this with the intention of applying it for painting generation and artist style transfer (see https://www.github.com/edogariu/artist-style-transfer), but beacuse of computing limitations (AWS if ur reading this please get back to me lol) I have yet to make it work. However, I tried to make it as general to use for any generative setting as possible, and am working on developing it into a standalone package.
 
 ## Improvements over DDPM
 Implemented improvements over the seminal Diffusion model (Ho et al., Denoising Diffusion Probabilistic Models, https://arxiv.org/pdf/2006.11239.pdf) are listed below, along with the papers they come from:
