@@ -13,7 +13,7 @@ Implemented improvements over the seminal Diffusion model (Ho et al., Denoising 
   - Upscaling after sampling: (Wang et al., Real-ESRGAN: Training Real-World Blind Super-Resolution with Pure Synthetic Data, https://arxiv.org/pdf/2107.10833.pdf)
 
 # Experiments and Examples
-To demonstrate the model's usefulness and relative ease to train, I trained it with both the 'digits' and 'letters' splits of the EMNIST dataset (https://www.nist.gov/itl/products-and-services/emnist-dataset). The results are highlighted below. Pretrained models and command line arguments for training and sampling are provided in the next sections.
+To demonstrate the model's usefulness and relative ease to train, I trained it with both the 'digits' and 'letters' splits of the [EMNIST dataset](https://www.nist.gov/itl/products-and-services/emnist-dataset). The results are highlighted below. Pretrained models and command line arguments for training and sampling are provided in the next sections.
 
 # Sampling
 Command line interface with diff_sample.py is done by creating variables for the sampling and model arguments. For each pre-trained model, I linked a download of the state_dict, a recommended $SAMPLE_ARGS, and the correct $MODEL_ARGS. Changing the $MODEL_ARGS will break stuff. 
@@ -29,6 +29,7 @@ Here is a list of changes to the arguments in $SAMPLE_ARGS that you can make to 
   - **_--guidance_strength (FLOAT)_**: replace (FLOAT) with decimal to control guidance strength during sampling
   - **_--upsample_**: include this to upsample samples by 4x before displaying/saving (make sure you have the ESRGAN state dict at 'models/RealESRGAN_x4plus.pth'
   - **_--labels (X/Y/Z/...)_**: replace (X/Y/Z/...) with '/'-separated list of labels to use instead of random labels. list must be num_samples long (for example, to create 3 samples with labels 1, 2, and 3 respectively, add '--labels 1/2/3')
+  - **_--cpu_**: include this to force the sampler to use the cpu instead of autodetecting device. this is useful if encountering cuda memory errors
 
 The correct $MODEL_ARGS variable is provided under each pre-trained model (and should not be changed), along with a recommended $SAMPLING_ARGS (which you might wanna change the **_--batch_size_** and **_--num_samples_** of and maybe add a **_--save_path_**). You can sample by cd'ing into 'nice-diffusion/' and executing the provided commands with whatever modifications you wish to make (you can drop the **_-w_** to not print updates during sampling).
 
