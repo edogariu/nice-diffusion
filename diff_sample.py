@@ -1,19 +1,17 @@
 import sys
 
-# from cv2 import imread, resize
+from cv2 import imread, resize
 import numpy as np
 import torch
 import torch.nn.functional as F
 import matplotlib.pyplot as plt
 
-from utils import make_argparser, get_dicts_from_args, imshow, convert_state_dict
+from utils import make_argparser, get_dicts_from_args, imshow
 from diff_model import DiffusionModel
 from diffusion import Diffusion
 
 
 def main():
-    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-
     # Parse command line arguments
     for _ in range(len(sys.argv)):
         temp = sys.argv.pop(0)
@@ -24,6 +22,10 @@ def main():
     other_args, model_args, diff_args = get_dicts_from_args(args)
 
     # Gather hyperparameters
+    if other_args['cpu']:
+        device = torch.device('cpu')
+    else:
+        device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     if other_args['seed'] is not None:
         torch.manual_seed(other_args['seed'])
     WORDY = other_args['wordy']
@@ -61,43 +63,45 @@ def main():
 
     if CONDITIONAL and len(LABELS) != 0:
         assert len(LABELS) == NUM_SAMPLES, 'please provide NUM_SAMPLES={} labels'.format(NUM_SAMPLES)
-    for i_sample in range(NUM_SAMPLES):
-        # CREATE RANDOM DATA
-        if START_IMG is None or STEPS_TO_DO is None:
-            data = torch.randn([BATCH_SIZE, model_args['in_channels'],
-                                model_args['resolution'], model_args['resolution']]).to(device)
-            steps = diff_args['rescaled_num_steps']
-        else:
-            steps = STEPS_TO_DO * diff_args['rescaled_num_steps'] // diff_args['original_num_steps']
-            data = diffusion.diffuse(x_0=START_IMG, steps_to_do=steps)
-        if CONDITIONAL:
-            if len(LABELS) == 0:
-                labels = torch.randint(low=0, high=model_args['num_classes'], size=(BATCH_SIZE,), device=device)
+        
+    with torch.no_grad():
+        for i_sample in range(NUM_SAMPLES):
+            # CREATE RANDOM DATA
+            if START_IMG is None or STEPS_TO_DO is None:
+                data = torch.randn([BATCH_SIZE, model_args['in_channels'],
+                                    model_args['resolution'], model_args['resolution']]).to(device)
+                steps = diff_args['rescaled_num_steps']
             else:
-                labels = torch.full(size=(BATCH_SIZE,), fill_value=LABELS[i_sample], device=device)
-        else:
-            labels = None
-
-        # RUN DIFFUSION
-        if WORDY:
-            print('Denoising sample {}! :)'.format(i_sample + 1))
-        out = diffusion.denoise(x=data, kwargs={'y': labels}, batch_size=BATCH_SIZE, progress=WORDY,
-                                steps_to_do=steps)
-
-        # Convert from [-1.0, 1.0] to [0, 255]
-        out = ((out + 1) * 127.5).clamp(0, 255).cpu()
-        data = ((data + 1) * 127.5).clamp(0, 255).cpu()
-
-        # Convert grayscale to 3-channel images for upsampling, if needed
-        if model_args['in_channels'] == 1:
-            data = torch.stack((255 - data.squeeze(),) * 3, dim=1)
-            out = torch.stack((255 - out.squeeze(),) * 3, dim=1)
-
-        if START_IMG is not None:
-            START_IMG = ((START_IMG + 1) * 127.5).clamp(0, 255)
-            samples.append((START_IMG.cpu(), out, labels.cpu()))
-        else:
-            samples.append((data, out, labels.cpu()))
+                steps = STEPS_TO_DO * diff_args['rescaled_num_steps'] // diff_args['original_num_steps']
+                data = diffusion.diffuse(x_0=START_IMG, steps_to_do=steps)
+            if CONDITIONAL:
+                if len(LABELS) == 0:
+                    labels = torch.randint(low=0, high=model_args['num_classes'], size=(BATCH_SIZE,), device=device)
+                else:
+                    labels = torch.full(size=(BATCH_SIZE,), fill_value=LABELS[i_sample], device=device)
+            else:
+                labels = None
+    
+            # RUN DIFFUSION
+            if WORDY:
+                print('Denoising sample {}! :)'.format(i_sample + 1))
+            out = diffusion.denoise(x=data, kwargs={'y': labels}, batch_size=BATCH_SIZE, progress=WORDY,
+                                    steps_to_do=steps)
+    
+            # Convert from [-1.0, 1.0] to [0, 255]
+            out = ((out + 1) * 127.5).clamp(0, 255).cpu()
+            data = ((data + 1) * 127.5).clamp(0, 255).cpu()
+    
+            # Convert grayscale to 3-channel images for upsampling, if needed
+            if model_args['in_channels'] == 1:
+                data = torch.stack((255 - data.squeeze(),) * 3, dim=1)
+                out = torch.stack((255 - out.squeeze(),) * 3, dim=1)
+    
+            if START_IMG is not None:
+                START_IMG = ((START_IMG + 1) * 127.5).clamp(0, 255)
+                samples.append((START_IMG.cpu(), out, labels.cpu()))
+            else:
+                samples.append((data, out, labels.cpu()))
 
     if WORDY:
         if SAVE_PATH is None:
@@ -113,25 +117,27 @@ def main():
         del model
 
         # avoid cuda alloc error on my 6GB GPU
-        if (model_args['resolution'] > 64 and BATCH_SIZE > 1) or BATCH_SIZE > 4 or not torch.cuda.is_available():
+        if other_args['cpu'] or (model_args['resolution'] > 64 and BATCH_SIZE > 1) or BATCH_SIZE > 4 or \
+                not torch.cuda.is_available():
             upsampling_device = torch.device('cpu')
         else:
             upsampling_device = torch.device('cuda')
 
-        esrgan = RRDBNet(num_in_ch=3, num_out_ch=3, num_feat=64, num_block=23, num_grow_ch=32, scale=4)
-        esrgan.load_state_dict(torch.load('models/RealESRGAN_x4plus.pth', map_location=upsampling_device)['params_ema'],
-                               strict=True)
-        esrgan.to(upsampling_device).eval()
-
-        upscaled_samples = []
-        for sample in samples:
-            data, out, labels = sample
-            data = F.interpolate(data, scale_factor=4, mode='bilinear', align_corners=False)
-            out = (out / 255.0).to(upsampling_device)
-            out = esrgan(out).cpu() * 255.0
-            out = out.clamp(0, 255)
-            upscaled_samples.append((data, out, labels))
-        samples = upscaled_samples
+        with torch.no_grad():
+            esrgan = RRDBNet(num_in_ch=3, num_out_ch=3, num_feat=64, num_block=23, num_grow_ch=32, scale=4)
+            esrgan.load_state_dict(torch.load('models/RealESRGAN_x4plus.pth', map_location=upsampling_device)
+                                   ['params_ema'], strict=True)
+            esrgan.to(upsampling_device).eval()
+    
+            upscaled_samples = []
+            for sample in samples:
+                data, out, labels = sample
+                data = F.interpolate(data, scale_factor=4, mode='bilinear', align_corners=False)
+                out = (out / 255.0).to(upsampling_device)
+                out = esrgan(out).cpu() * 255.0
+                out = out.clamp(0, 255)
+                upscaled_samples.append((data, out, labels))
+            samples = upscaled_samples
 
     if SAVE_PATH is None:  # Display
         for sample in samples:

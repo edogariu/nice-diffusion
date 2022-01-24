@@ -47,6 +47,9 @@ def make_argparser(prog):
                                    'then unapply via denoising')
         sampling.add_argument('--seed', type=int, required=False, metavar=o, default=None,
                               help='rng seed to use for reproducibility')
+        sampling.add_argument('--cpu', required=False, default=False, action='store_true',
+                              help='add to force sampling to use cpu only instead of auto-detecting device. '
+                                   'useful for cuda memory errors')
 
     # Training-only args
     else:
