@@ -18,25 +18,27 @@ To demonstrate the model's usefulness and relative ease to train, I trained it w
 # Sampling
 Command line interface with diff_sample.py is done by creating variables for the sampling and model arguments. For each pre-trained model, I linked a download of the state_dict, a recommended $SAMPLE_ARGS, and the correct $MODEL_ARGS. Changing the $MODEL_ARGS will break stuff. 
 Here is a list of changes to the arguments in $SAMPLE_ARGS that you can make to fit it to your uses:
-  - **_--batch_size (INT)_**: replace (INT) with number of images to make each batch
-  - **_--num_samples (INT)_**: replace (INT) with number of batches to generate. total number of samples made will be batch_size * num_samples
-  - **_--rescaled_num_steps (INT)_**: replace (INT) with number of steps you want each denoising process to take
-  - **_--use_ddim_**: include this to use DDIM sampling (useful for when rescaled_num_steps is small)
-  - **_--ddim_eta (FLOAT)_**: replace (FLOAT) with decimal to control DDIM strength during sampling
-  - **_--model_path (FILENAME)_**: replace (FILENAME) with relative path to pre-trained model state dict
-  - **_--save_path (DIRECTORY)_**: replace (DIRECTORY) with relative path to directory to save samples in
-  - **_--guidance_method (STRING)_**: replace (STRING) with either 'classifier' or 'classifier_free' to use the corresponding guidance method
-  - **_--guidance_strength (FLOAT)_**: replace (FLOAT) with decimal to control guidance strength during sampling
-  - **_--upsample_**: include this to upsample samples by 4x before displaying/saving (make sure you have the ESRGAN state dict at 'models/RealESRGAN_x4plus.pth'
-  - **_--labels (X/Y/Z/...)_**: replace (X/Y/Z/...) with '/'-separated list of labels to use instead of random labels. list must be num_samples long (for example, to create 3 samples with labels 1, 2, and 3 respectively, add '--labels 1/2/3')
-  - **_--cpu_**: include this to force the sampler to use the cpu instead of autodetecting device. this is useful if encountering cuda memory errors
+  - `--batch_size (INT)`: replace (INT) with number of images to make each batch
+  - `--num_samples (INT)`: replace (INT) with number of batches to generate. total number of samples made will be batch_size * num_samples
+  - `--rescaled_num_steps (INT)`: replace (INT) with number of steps you want each denoising process to take
+  - `--use_ddim`: include this to use DDIM sampling (useful for when rescaled_num_steps is small)
+  - `--ddim_eta (FLOAT)`: replace (FLOAT) with decimal to control DDIM strength during sampling
+  - `--model_path (FILENAME)`: replace (FILENAME) with relative path to pre-trained model state dict
+  - `--save_path (DIRECTORY)`: replace (DIRECTORY) with relative path to directory to save samples in
+  - `--guidance_method (STRING)`: replace (STRING) with either `classifier` or `classifier_free` to use the corresponding guidance method
+  - `--guidance_strength (FLOAT)`: replace (FLOAT) with decimal to control guidance strength during sampling
+  - `--upsample`: include this to upsample samples by 4x before displaying/saving (make sure you have the ESRGAN state dict at `models/RealESRGAN_x4plus.pth`
+  - `--labels (X/Y/Z/...)`: replace (X/Y/Z/...) with '/'-separated list of labels to use instead of random labels. list must be num_samples long (for example, to create 3 samples with labels 1, 2, and 3 respectively, add `--labels 1/2/3`)
+  - `--cpu`: include this to force the sampler to use the cpu instead of autodetecting device. this is useful if encountering cuda memory errors
 
-The correct $MODEL_ARGS variable is provided under each pre-trained model (and should not be changed), along with a recommended $SAMPLING_ARGS (which you might wanna change the **_--batch_size_** and **_--num_samples_** of and maybe add a **_--save_path_**). You can sample by cd'ing into 'nice-diffusion/' and executing the provided commands with whatever modifications you wish to make (you can drop the **_-w_** to not print updates during sampling).
+The correct $MODEL_ARGS variable is provided under each pre-trained model (and should not be changed), along with a recommended $SAMPLING_ARGS (which you might wanna change the `--batch_size` and `--num_samples` of and maybe add a `--save_path`). You can sample by cd'ing into `nice-diffusion/` and executing the provided commands with whatever modifications you wish to make (you can drop the `-w` to not print updates during sampling).
+
+The use of upsampling requires that the [RealESRGAN_x4plus.pth](https://download1641.mediafire.com/gpmb5azvul0g/6o6hazgj2h7tlsb/RealESRGAN_x4plus.pth) file is downloaded and located in the `models/` folder.
 
 ### EMNIST
 **Download pre-trained model**: [EMNIST_model_params.pt](www.google.com "Download EMNIST Model")
 
-The statements written below assume that the pre-trained model is my EMNIST model and that it is called '[EMNIST_model_params.pt](www.google.com "Download EMNIST Model")' and is located in a folder called 'models/'. If it's somewhere else, please fix the **_--model_path_** argument.
+The statements written below assume that the pre-trained model is my EMNIST model and that it is called [EMNIST_model_params.pt](www.google.com "Download EMNIST Model") and is located in a folder called `models/`. If it's somewhere else, please fix the `--model_path` argument.
 ```PowerShell
 # Linux Terminal 
 SAMPLE_ARGS='--batch_size 8 --num_samples 1 --rescaled_num_steps 25 --model_path models/EMNIST_model_params.pt --guidance_method classifier_free --guidance_strength 0.8'
@@ -53,7 +55,7 @@ python diff_sample.py -w $SAMPLE_ARGS $MODEL_ARGS
 ### OpenAI 64x64 Conditional ImageNet
 **Download pre-trained model**: [64x64_diffusion.pt](www.google.com "Download Converted 64x64 ImageNet Model")
 
-The statements written below assume that the pre-trained model is OpenAI's 64x64 Conditional ImageNet model (Dhariwal/Nichol, Diffusion Model Beats GAN on Image Synthesis, https://arxiv.org/pdf/2105.05233.pdf) and that it is called '[64x64_diffusion.pt](www.google.com "Download Converted 64x64 ImageNet Model")' and is located in a folder called 'models/'. If it's somewhere else, please fix the **_--model_path_** argument.
+The statements written below assume that the pre-trained model is OpenAI's 64x64 Conditional ImageNet model (Dhariwal/Nichol, Diffusion Model Beats GAN on Image Synthesis, https://arxiv.org/pdf/2105.05233.pdf) and that it is called [64x64_diffusion.pt](www.google.com "Download Converted 64x64 ImageNet Model") and is located in a folder called `models/`. If it's somewhere else, please fix the`--model_path` argument.
 ```PowerShell
 # Linux Terminal 
 SAMPLE_ARGS='--batch_size 8 --num_samples 1 --rescaled_num_steps 25 --use_ddim --ddim_eta 0.0 --model_path models/64x64_diffusion.pt'
@@ -70,7 +72,7 @@ python diff_sample.py -w $SAMPLE_ARGS $MODEL_ARGS
 ### OpenAI 128x128 Conditional ImageNet
 **Download pre-trained model**: [128x128_diffusion.pt](www.google.com "Download Converted 128x128 ImageNet Model")
 
-The statements written below assume that the pre-trained model is OpenAI's 128x128 Conditional ImageNet model (Dhariwal/Nichol, Diffusion Model Beats GAN on Image Synthesis, https://arxiv.org/pdf/2105.05233.pdf) and that it is called '[128x128_diffusion.pt](www.google.com "Download Converted 128x128 ImageNet Model")' and is located in a folder called 'models/'. If it's somewhere else, please fix the **_--model_path_** argument.
+The statements written below assume that the pre-trained model is OpenAI's 128x128 Conditional ImageNet model (Dhariwal/Nichol, Diffusion Model Beats GAN on Image Synthesis, https://arxiv.org/pdf/2105.05233.pdf) and that it is called [128x128_diffusion.pt](www.google.com "Download Converted 128x128 ImageNet Model") and is located in a folder called `models/`. If it's somewhere else, please fix the `--model_path` argument.
 ```PowerShell
 # Linux Terminal 
 SAMPLE_ARGS='--batch_size 8 --num_samples 1 --rescaled_num_steps 25 --use_ddim --ddim_eta 0.0 --model_path models/128x128_diffusion.pt'
@@ -87,7 +89,7 @@ python diff_sample.py -w $SAMPLE_ARGS $MODEL_ARGS
 ### OpenAI 256x256 Unconditional ImageNet
 **Download pre-trained model**: [256x256_diffusion_uncond.pt](www.google.com "Download Converted 256x256 Unconditional ImageNet Model")
 
-The statements written below assume that the pre-trained model is OpenAI's 256x256 Unconditional ImageNet model (Dhariwal/Nichol, Diffusion Model Beats GAN on Image Synthesis, https://arxiv.org/pdf/2105.05233.pdf) and that it is called '[256x256_diffusion_uncond.pt](www.google.com "Download Converted 256x256 Unconditional ImageNet Model")' and is located in a folder called 'models/'. If it's somewhere else, please fix the **_--model_path_** argument.
+The statements written below assume that the pre-trained model is OpenAI's 256x256 Unconditional ImageNet model (Dhariwal/Nichol, Diffusion Model Beats GAN on Image Synthesis, https://arxiv.org/pdf/2105.05233.pdf) and that it is called [256x256_diffusion_uncond.pt](www.google.com "Download Converted 256x256 Unconditional ImageNet Model") and is located in a folder called `models/`. If it's somewhere else, please fix the `--model_path` argument.
 ```PowerShell
 # Linux Terminal 
 SAMPLE_ARGS='--batch_size 8 --num_samples 1 --rescaled_num_steps 25 --use_ddim --ddim_eta 0.0 --model_path models/256x256_diffusion_uncond.pt'
