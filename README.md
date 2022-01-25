@@ -16,8 +16,8 @@ Implemented improvements over the seminal Diffusion model (Ho et al., Denoising 
 To demonstrate the model's usefulness and relative ease to train, I trained it with both the 'digits' and 'letters' splits of the [EMNIST dataset](https://www.nist.gov/itl/products-and-services/emnist-dataset). The results are highlighted below. Pretrained models and command line arguments for training and sampling are provided in the next sections.
 
 # Sampling
-Command line interface with diff_sample.py is done by creating variables for the sampling and model arguments. For each pre-trained model, I linked a download of the state_dict, a recommended $SAMPLE_ARGS, and the correct $MODEL_ARGS. Changing the $MODEL_ARGS will break stuff. 
-Here is a list of changes to the arguments in $SAMPLE_ARGS that you can make to fit it to your uses:
+Command line interface with diff_sample.py is done by creating variables for the sampling and model arguments. For each pre-trained model, I linked a download of the state_dict, a recommended **_$SAMPLE_ARGS_**, and the correct **_$MODEL_ARGS_**. Changing the **_$MODEL_ARGS_** will break stuff. 
+Here is a list of changes to the arguments in **_$SAMPLE_ARGS_** that you can make to fit it to your uses:
   - `--batch_size (INT)`: replace (INT) with number of images to make each batch
   - `--num_samples (INT)`: replace (INT) with number of batches to generate. total number of samples made will be batch_size * num_samples
   - `--rescaled_num_steps (INT)`: replace (INT) with number of steps you want each denoising process to take
@@ -31,7 +31,7 @@ Here is a list of changes to the arguments in $SAMPLE_ARGS that you can make to 
   - `--labels (X/Y/Z/...)`: replace (X/Y/Z/...) with '/'-separated list of labels to use instead of random labels. list must be num_samples long (for example, to create 3 samples with labels 1, 2, and 3 respectively, add `--labels 1/2/3`)
   - `--cpu`: include this to force the sampler to use the cpu instead of autodetecting device. this is useful if encountering cuda memory errors
 
-The correct $MODEL_ARGS variable is provided under each pre-trained model (and should not be changed), along with a recommended $SAMPLING_ARGS (which you might wanna change the `--batch_size` and `--num_samples` of and maybe add a `--save_path`). You can sample by cd'ing into `nice-diffusion/` and executing the provided commands with whatever modifications you wish to make (you can drop the `-w` to not print updates during sampling).
+The correct **_$MODEL_ARGS_** variable is provided under each pre-trained model (and should not be changed), along with a recommended **_$SAMPLE_ARGS_** (which you might wanna change the `--batch_size` and `--num_samples` of and maybe add a `--save_path`). You can sample by cd'ing into `nice-diffusion/` and executing the provided commands with whatever modifications you wish to make (you can drop the `-w` to not print updates during sampling).
 
 The use of upsampling requires that the [RealESRGAN_x4plus.pth](https://download1641.mediafire.com/gpmb5azvul0g/6o6hazgj2h7tlsb/RealESRGAN_x4plus.pth) file is downloaded and located in the `models/` folder.
 
