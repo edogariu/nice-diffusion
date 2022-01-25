@@ -38,7 +38,7 @@ The use of upsampling requires that the [RealESRGAN_x4plus.pth](https://download
 ### EMNIST
 **Download pre-trained model**: [EMNIST_model_params.pt](www.google.com "Download EMNIST Model")
 
-The statements written below assume that the pre-trained model is my EMNIST model and that it is called [EMNIST_model_params.pt](www.google.com "Download EMNIST Model") and is located in a folder called `models/`. If it's somewhere else, please fix the `--model_path` argument.
+The statements written below assume that the pre-trained model is my EMNIST model and that it is called [EMNIST_model_params.pt](https://download1594.mediafire.com/q3isbeoo7s7g/se37uu47y07us19/EMNIST_model_params.pt "Download EMNIST Model") and is located in a folder called `models/`. If it's somewhere else, please fix the `--model_path` argument.
 ```PowerShell
 # Linux Terminal 
 SAMPLE_ARGS='--batch_size 8 --num_samples 1 --rescaled_num_steps 25 --model_path models/EMNIST_model_params.pt --guidance_method classifier_free --guidance_strength 0.8'
@@ -55,7 +55,7 @@ python diff_sample.py -w $SAMPLE_ARGS $MODEL_ARGS
 ### OpenAI 64x64 Conditional ImageNet
 **Download pre-trained model**: [64x64_diffusion.pt](www.google.com "Download Converted 64x64 ImageNet Model")
 
-The statements written below assume that the pre-trained model is OpenAI's 64x64 Conditional ImageNet model (Dhariwal/Nichol, Diffusion Model Beats GAN on Image Synthesis, https://arxiv.org/pdf/2105.05233.pdf) and that it is called [64x64_diffusion.pt](www.google.com "Download Converted 64x64 ImageNet Model") and is located in a folder called `models/`. If it's somewhere else, please fix the`--model_path` argument.
+The statements written below assume that the pre-trained model is OpenAI's 64x64 Conditional ImageNet model (Dhariwal/Nichol, Diffusion Model Beats GAN on Image Synthesis, https://arxiv.org/pdf/2105.05233.pdf) and that it is called [64x64_diffusion.pt](https://download1478.mediafire.com/5i0iy57fy7yg/7fbkanlblkjjbpk/64x64_diffusion.pt "Download Converted 64x64 ImageNet Model") and is located in a folder called `models/`. If it's somewhere else, please fix the`--model_path` argument.
 ```PowerShell
 # Linux Terminal 
 SAMPLE_ARGS='--batch_size 8 --num_samples 1 --rescaled_num_steps 25 --use_ddim --ddim_eta 0.0 --model_path models/64x64_diffusion.pt'
@@ -72,7 +72,7 @@ python diff_sample.py -w $SAMPLE_ARGS $MODEL_ARGS
 ### OpenAI 128x128 Conditional ImageNet
 **Download pre-trained model**: [128x128_diffusion.pt](www.google.com "Download Converted 128x128 ImageNet Model")
 
-The statements written below assume that the pre-trained model is OpenAI's 128x128 Conditional ImageNet model (Dhariwal/Nichol, Diffusion Model Beats GAN on Image Synthesis, https://arxiv.org/pdf/2105.05233.pdf) and that it is called [128x128_diffusion.pt](www.google.com "Download Converted 128x128 ImageNet Model") and is located in a folder called `models/`. If it's somewhere else, please fix the `--model_path` argument.
+The statements written below assume that the pre-trained model is OpenAI's 128x128 Conditional ImageNet model (Dhariwal/Nichol, Diffusion Model Beats GAN on Image Synthesis, https://arxiv.org/pdf/2105.05233.pdf) and that it is called [128x128_diffusion.pt](https://download1326.mediafire.com/rt93wwag56eg/zl6hqoaywpud94u/128x128_diffusion.pt "Download Converted 128x128 ImageNet Model") and is located in a folder called `models/`. If it's somewhere else, please fix the `--model_path` argument.
 ```PowerShell
 # Linux Terminal 
 SAMPLE_ARGS='--batch_size 8 --num_samples 1 --rescaled_num_steps 25 --use_ddim --ddim_eta 0.0 --model_path models/128x128_diffusion.pt'
@@ -89,7 +89,7 @@ python diff_sample.py -w $SAMPLE_ARGS $MODEL_ARGS
 ### OpenAI 256x256 Unconditional ImageNet
 **Download pre-trained model**: [256x256_diffusion_uncond.pt](www.google.com "Download Converted 256x256 Unconditional ImageNet Model")
 
-The statements written below assume that the pre-trained model is OpenAI's 256x256 Unconditional ImageNet model (Dhariwal/Nichol, Diffusion Model Beats GAN on Image Synthesis, https://arxiv.org/pdf/2105.05233.pdf) and that it is called [256x256_diffusion_uncond.pt](www.google.com "Download Converted 256x256 Unconditional ImageNet Model") and is located in a folder called `models/`. If it's somewhere else, please fix the `--model_path` argument.
+The statements written below assume that the pre-trained model is OpenAI's 256x256 Unconditional ImageNet model (Dhariwal/Nichol, Diffusion Model Beats GAN on Image Synthesis, https://arxiv.org/pdf/2105.05233.pdf) and that it is called [256x256_diffusion_uncond.pt](https://download1347.mediafire.com/5kimx3bn6hcg/8224m8buzgi4zvw/256x256_diffusion_uncond.pt "Download Converted 256x256 Unconditional ImageNet Model") and is located in a folder called `models/`. If it's somewhere else, please fix the `--model_path` argument.
 ```PowerShell
 # Linux Terminal 
 SAMPLE_ARGS='--batch_size 8 --num_samples 1 --rescaled_num_steps 25 --use_ddim --ddim_eta 0.0 --model_path models/256x256_diffusion_uncond.pt'
