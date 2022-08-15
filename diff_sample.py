@@ -13,7 +13,7 @@ from diffusion import Diffusion
 def main():
     # Parse command lisne arguments
     for _ in range(len(sys.argv)):
-        temp = sys.argv.pop(0)s
+        temp = sys.argv.pop(0)
         for arg in temp.split(' '):
             sys.argv.append(arg)
     parser = make_argparser('diff_sample')
