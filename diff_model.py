@@ -51,14 +51,16 @@ class Upsample(nn.Module):
     """
     Creates a module whose forward pass performs 2x upsampling of input image.
 
-        Parameters:
-            - in_channels (int): number of channels to pass in
-            - out_channels (int): number of channels to return. if None, return with in_channels channels
-            - with_conv (bool)L if True use Conv2D for upsampling, if False use nearest neighbor interpolation
+    Parameters
+    --------------
+        - in_channels (int): number of channels to pass in
+        - out_channels (int): number of channels to return. if None, return with in_channels channels
+        - with_conv (bool)L if True use Conv2D for upsampling, if False use nearest neighbor interpolation
 
 
-        Returns:
-            - An nn.Module to be used to compose a network.
+    Returns
+    ---------------
+        - An nn.Module to be used to compose a network.
     """
 
     def __init__(self, in_channels, with_conv, out_channels=None):
@@ -81,13 +83,15 @@ class Downsample(nn.Module):
     """
     Creates a module whose forward pass performs 2x downsampling of input image.
 
-        Parameters:
-            - in_channels (int): number of channels to pass in
-            - out_channels (int): number of channels to return. if None, return with in_channels channels
-            - with_conv (bool): if True use Conv2D for downsampling, if False use 2D avg. pooling
+    Parameters
+    ---------------
+        - in_channels (int): number of channels to pass in
+        - out_channels (int): number of channels to return. if None, return with in_channels channels
+        - with_conv (bool): if True use Conv2D for downsampling, if False use 2D avg. pooling
 
-        Returns:
-            - An nn.Module to be used to compose a network.
+    Returns
+    --------------
+        - An nn.Module to be used to compose a network.
     """
 
     def __init__(self, in_channels, with_conv, out_channels=None):
@@ -114,20 +118,22 @@ class ResidualBlock(UsesSteps):
     Creates a residual block containing 2 convolutional layers with a skip connection.
     Uses timestep embeddings and 2 layers of GroupNorm (32 groups).
 
-        Parameters:
-            - in_channels (int): number of channels to pass in
-            - out_channels (int): number of channels to return. if None, return with in_channels channels
-            - step_channels (int): number of channels to use for timestep embedding
-            - upsample (bool): whether to upsample before first convolution
-            - downsample (bool): whether to downsample before first convolution
-            - use_conv (bool): if out_channels != in_channels and this is True, use 3x3 convolution to
-            - change number of channels
-            - use_adaptive_gn (bool): whether to use step embedding to scale and shift input or simply add them
-            - use_grad_checkpoints (bool): whether to use grad checkpointing, which lowers memory but raises computation
-            - dropout (double): dropout probability
+    Parameters
+    --------------
+        - in_channels (int): number of channels to pass in
+        - out_channels (int): number of channels to return. if None, return with in_channels channels
+        - step_channels (int): number of channels to use for timestep embedding
+        - upsample (bool): whether to upsample before first convolution
+        - downsample (bool): whether to downsample before first convolution
+        - use_conv (bool): if out_channels != in_channels and this is True, use 3x3 convolution to
+        - change number of channels
+        - use_adaptive_gn (bool): whether to use step embedding to scale and shift input or simply add them
+        - use_grad_checkpoints (bool): whether to use grad checkpointing, which lowers memory but raises computation
+        - dropout (double): dropout probability
 
-        Returns:
-            - An nn.Module to be used to compose a network.
+    Returns
+    ------------------
+        - An nn.Module to be used to compose a network.
     """
 
     def __init__(self, in_channels, step_channels, dropout, upsample=False, downsample=False,
@@ -210,15 +216,17 @@ class AttentionBlock(nn.Module):
     and a linear projection out.
     Uses 1 layer of GroupNorm (32 groups).
 
-        Parameters:
-            - channels (int): number of channels to pass in and return out
-            - num_heads (int): number of heads to use in Multi-Headed-Attention
-            - num_head_channels (int): number of channels to use for each head. if not None, then this block uses
-            (channels // num_head_channels) heads and ignores num_heads
-            - split_qkv_first (bool): whether to split qkv first or split heads first during attention
+    Parameters
+    -------------
+        - channels (int): number of channels to pass in and return out
+        - num_heads (int): number of heads to use in Multi-Headed-Attention
+        - num_head_channels (int): number of channels to use for each head. if not None, then this block uses
+        (channels // num_head_channels) heads and ignores num_heads
+        - split_qkv_first (bool): whether to split qkv first or split heads first during attention
 
-        Returns:
-            - An nn.Module to be used to compose a network.
+    Returns
+    -------------
+        - An nn.Module to be used to compose a network.
     """
 
     def __init__(self, channels, num_heads=1, num_head_channels=None, split_qkv_first=True):
@@ -286,26 +294,28 @@ class DiffusionModel(nn.Module):
     """
     Creates a Diffusion model to predict epsilon in a generative denoising process.
 
-        Parameters:
-            - resolution (int): height and width resolution of inputs (assumes square images)
-            - in_channels (int): number of channels to pass in
-            - out_channels (int): number of channels to return
-            - model_channels (int): number of channels to use within the model, before any channel multipliers apply
-            - channel_mult (tuple of ints): multipliers for number of inner channels to use
-            - num_res_blocks (int): number of ResidualBlocks to use for each channel multiplier level
-            - resblock_updown (bool): whether to use ResidualBlocks or Upsample/Downsample modules to resample
-            - conv_resample (bool): if resblock_updown is False, whether to use Conv2D layers to resample
-            - attention_resolutions (tuple of ints): which resolutions at which to apply attention
-            - num_classes (int): if not None, number of classes to use for class-conditional models
-            - num_heads (int): number of heads to use for AttentionBlocks
-            - num_head_channels (int): number of channels to use for each head for AttentionBlocks, supersedes num_heads
-            - use_adaptive_gn (bool): whether to use Adaptive GroupNorm with step & class embeddings in ResidualBlocks
-            - split_qkv_first (bool): whether to split qkv first or split heads first during attention
-            - use_grad_checkpoints (bool): whether to use grad checkpointing, which lowers memory but raises computation
-            - dropout (double): dropout probability in the ResidualBlocks
+    Parameters
+    ------------
+        - resolution (int): height and width resolution of inputs (assumes square images)
+        - in_channels (int): number of channels to pass in
+        - out_channels (int): number of channels to return
+        - model_channels (int): number of channels to use within the model, before any channel multipliers apply
+        - channel_mult (tuple of ints): multipliers for number of inner channels to use
+        - num_res_blocks (int): number of ResidualBlocks to use for each channel multiplier level
+        - resblock_updown (bool): whether to use ResidualBlocks or Upsample/Downsample modules to resample
+        - conv_resample (bool): if resblock_updown is False, whether to use Conv2D layers to resample
+        - attention_resolutions (tuple of ints): which resolutions at which to apply attention
+        - num_classes (int): if not None, number of classes to use for class-conditional models
+        - num_heads (int): number of heads to use for AttentionBlocks
+        - num_head_channels (int): number of channels to use for each head for AttentionBlocks, supersedes num_heads
+        - use_adaptive_gn (bool): whether to use Adaptive GroupNorm with step & class embeddings in ResidualBlocks
+        - split_qkv_first (bool): whether to split qkv first or split heads first during attention
+        - use_grad_checkpoints (bool): whether to use grad checkpointing, which lowers memory but raises computation
+        - dropout (double): dropout probability in the ResidualBlocks
 
-        Returns:
-            - A UNet model to be used for diffusion.
+    Returns
+    --------------
+    - A UNet model to be used for diffusion.
     """
 
     def __init__(

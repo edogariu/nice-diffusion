@@ -20,21 +20,28 @@ possible improvements:
 
 
 class Diffusion:
-    """
-    Creates an object to handle a diffusion chain and a reverse diffusion (denoising) chain, with or without DDIM
-    sampling.
+    def __init__(self, model,
+                 original_num_steps, rescaled_num_steps,
+                 sampling_var_type, loss_type,
+                 betas=None, beta_schedule='linear',
+                 guidance_method=None, guidance_strength=None, classifier=None,
+                 use_ddim=False, ddim_eta=None, device=None):
+        """
+        Creates an object to handle a diffusion chain and a reverse diffusion (denoising) chain, with or without DDIM
+        sampling.
 
-        Parameters:
+        Parameters
+        -----------------
             - model (DiffusionModel): trained model to predict epsilon from noisy image
             - original_num_steps (int): number of diffusion steps that model was trained with (T)
             - rescaled_num_steps (int): number of diffusion steps to be considered when sampling
             - sampling_var_type (str): type of variance calculation -- 'small' or 'large' for fixed variances of given
-              sizes, 'learned' (outputs log(var)) or 'learned_interpolation' (outputs interpolation value for log(var))
-              for variances predicted by model
+                sizes, 'learned' (outputs log(var)) or 'learned_interpolation' (outputs interpolation value for log(var))
+                for variances predicted by model
             - loss_type (str): type of training loss calculation -- 'simple' for simple MSE loss of prediction,
-              'KL' or 'KL_rescaled' for loss using variational lower bound, 'hybrid' for weighted
-              sum of simple and KL losses (note: KL is only used for learning vars in hybrid loss).
-              If sampling_var_type is fixed (i.e. 'small' or 'large'), you should only use 'simple' loss
+                'KL' or 'KL_rescaled' for loss using variational lower bound, 'hybrid' for weighted
+                sum of simple and KL losses (note: KL is only used for learning vars in hybrid loss).
+                If sampling_var_type is fixed (i.e. 'small' or 'large'), you should only use 'simple' loss
             - beta_schedule (str): scheduling method for noise variances (betas) -- 'linear', 'constant', or 'cosine'
             - betas (np.array): alternative to beta_schedule where betas are directly supplied
             - guidance_method (str): method of denoising guidance to use -- None, 'classifier', or 'classifier_free'
@@ -45,16 +52,10 @@ class Diffusion:
             - device (torch.device): if not None, which device to perform diffusion with
 
 
-        Returns:
+        Returns
+        ----------------
             - Diffusion object to call .diffuse(), .denoise(), or .loss() with with.
-    """
-
-    def __init__(self, model,
-                 original_num_steps, rescaled_num_steps,
-                 sampling_var_type, loss_type,
-                 betas=None, beta_schedule='linear',
-                 guidance_method=None, guidance_strength=None, classifier=None,
-                 use_ddim=False, ddim_eta=None, device=None):
+        """
         self.model = model
         if device is None:
             self.device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
@@ -133,12 +134,14 @@ class Diffusion:
         """
         Add noise to an input corresponding to a given number of steps in the diffusion Markov chain.
 
-            Parameters:
-                - x (torch.tensor): input image to diffuse (usually x_0)
-                - steps_to_do (int): number of rescaled diffusion steps to apply forward
+        Parameters
+        --------------
+            - x (torch.tensor): input image to diffuse (usually x_0)
+            - steps_to_do (int): number of rescaled diffusion steps to apply forward
 
-            Returns:
-                - Diffused image(s).
+        Returns
+        --------------
+            - Diffused image(s).
         """
         with torch.no_grad():
             # If unspecified or invalid number of steps to do, go until completion x_T
@@ -156,17 +159,19 @@ class Diffusion:
         Sample the posterior of the forward process in the diffusion Markov chain. If self.use_ddim is True, uses DDIM
         sampling instead of traditional DDPM sampling.
 
-            Parameters:
-                - x (torch.tensor): if not None, input image x_t to denoise. if None, denoises Gaussian noise x_T
-                - kwargs (dict): dict of extra args to pass to model, should be {'y': label}  with label to guide with
-                - start_step (int): which rescaled step to start at. should correspond to x's timestep
-                - steps_to_do (int): number of rescaled diffusion steps to apply forward
-                - batch_size (int): batch size of denoising process. only used if x is None
-                - ema_params (dict): dictionary of EMA parameters' data. if not None, use these for sampling
-                - progress (bool): whether to show tqdm progress bar
+        Parameters
+        --------------
+            - x (torch.tensor): if not None, input image x_t to denoise. if None, denoises Gaussian noise x_T
+            - kwargs (dict): dict of extra args to pass to model, should be {'y': label}  with label to guide with
+            - start_step (int): which rescaled step to start at. should correspond to x's timestep
+            - steps_to_do (int): number of rescaled diffusion steps to apply forward
+            - batch_size (int): batch size of denoising process. only used if x is None
+            - ema_params (dict): dictionary of EMA parameters' data. if not None, use these for sampling
+            - progress (bool): whether to show tqdm progress bar
 
-            Returns:
-                - Denoised sample(s).
+        Returns
+        ----------------
+            - Denoised sample(s).
         """
         if kwargs is None:
             kwargs = {}
@@ -474,12 +479,15 @@ def extract(a, t, broadcast_shape):
     """
     Index into a's elements with index t, returning tensor that is broadcastable to shape.
 
-            Parameters:
-            - a (np.array): array to index into
-            - t (torch.tensor): timestep tensor to use as index
-            - broadcast_shape (iterable): shape to make output tensor broadcastable to
-        Returns:
-            - result (torch.tensor): tensor of selected values from a, broadcastable with broadcast_shape
+    Parameters
+    ------------
+        - a (np.array): array to index into
+        - t (torch.tensor): timestep tensor to use as index
+        - broadcast_shape (iterable): shape to make output tensor broadcastable to
+
+    Returns
+    ------------
+        - result (torch.tensor): tensor of selected values from a, broadcastable with broadcast_shape
     """
     result = torch.gather(torch.from_numpy(a).to(t.device).float(), 0, t.long())
     # Keep adding dimensions to results until right shape
