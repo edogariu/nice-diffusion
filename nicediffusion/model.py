@@ -1,5 +1,4 @@
 from abc import abstractmethod
-from utils import checkpoint, override
 
 import torch.nn as nn
 import torch.nn.functional as F
@@ -8,6 +7,8 @@ import math
 
 import torch.utils
 import torch.utils.checkpoint
+
+from .utils import checkpoint, override
 
 '''
 DIFFUSION MODEL BASED ON THE FOLLOWING PAPERS AND CORRESPONDING WORK:

@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 from basicsr.archs.rrdbnet_arch import RRDBNet  # https://github.com/xinntao/BasicSR
 
 from swin import SwinIR
-from diff_model import SuperResolutionModel, convert_state_dict
+from model import SuperResolutionModel, convert_state_dict
 from diffusion import Diffusion
 
 """

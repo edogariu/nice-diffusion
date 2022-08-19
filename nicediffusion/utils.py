@@ -1,10 +1,10 @@
-from abc import ABC
 from collections import OrderedDict
 import argparse
 import matplotlib.pyplot as plt
 import numpy as np
 import torch.autograd
 
+from .default_args import *
 
 # ----------------------------------------------------------------------------------------------------------------------
 # Argument parsing
@@ -29,33 +29,35 @@ def make_argparser(prog):
     if is_sample:
         sampling = parser.add_argument_group('sampling arguments', 'arguments for sampling process')
         sampling.add_argument('--model_path', type=str, required=True, metavar=r,
-                              help='relative file path of model state dict')
+                            help='relative file path of model state dict')
+        sampling.add_argument('-c', '--custom', required=False, action='store_true', default=False,
+                            help='whether to use a custom model/diffusion configuration')
         sampling.add_argument('--batch_size', type=int, required=True, metavar=r,
-                              help='number of images per batch. decrease this to conserve cuda memory')
+                            help='number of images per batch. decrease this to conserve cuda memory')
         sampling.add_argument('--num_samples', type=int, required=True, metavar=r,
-                              help='number of batches to sample. total number of images is num_samples * batch_size')
+                            help='number of batches to sample. total number of images is num_samples * batch_size')
         sampling.add_argument('--upsample', required=False, default=False, action='store_true',
-                              help='add to use Real-ESRGAN (https://arxiv.org/abs/2107.10833) for '
-                                   '4x superresolution')
+                            help='add to use Real-ESRGAN (https://arxiv.org/abs/2107.10833) for '
+                                '4x superresolution')
         sampling.add_argument('--wordy', '-w', dest='wordy', required=False, default=False, action='store_true',
-                              help='add this to print status')
+                            help='add this to print status')
         sampling.add_argument('--save_path', type=str, required=False, metavar=o, default=None,
-                              help='relative file path to save generated images. if not provided, they will be '
-                                   'displayed instead')
+                            help='relative file path to save generated images. if not provided, they will be '
+                                'displayed instead')
         sampling.add_argument('--labels', type=str, required=False, metavar=o, default='',
-                              help='labels to be split among samples during conditional sampling. '
-                                   'if not provided, labels will be random')
+                            help='labels to be split among samples during conditional sampling. '
+                                'if not provided, labels will be random')
         sampling.add_argument('--start_img', type=str, required=False, metavar=o, default=None,
-                              help='relative file path of image to start denoising with. if not provided, start from '
-                                   'random noise')
+                            help='relative file path of image to start denoising with. if not provided, start from '
+                                'random noise')
         sampling.add_argument('--steps_to_do', type=int, required=False, metavar=o, default=None,
-                              help='number of rescaled steps of noise to apply to start_img and '
-                                   'then unapply via denoising')
+                            help='number of rescaled steps of noise to apply to start_img and '
+                                'then unapply via denoising')
         sampling.add_argument('--seed', type=int, required=False, metavar=o, default=None,
-                              help='rng seed to use for reproducibility')
+                            help='rng seed to use for reproducibility')
         sampling.add_argument('--cpu', required=False, default=False, action='store_true',
-                              help='add to force sampling to use cpu only instead of auto-detecting device. '
-                                   'useful for cuda memory errors')
+                            help='add to force sampling to use cpu only instead of auto-detecting device. '
+                                'useful for cuda memory errors')
 
     # Training-only args
     else:
@@ -87,19 +89,19 @@ def make_argparser(prog):
 
     # DiffusionModel args
     model_args = parser.add_argument_group('model arguments', 'arguments to create DiffusionModel')
-    model_args.add_argument('--resolution', type=int, required=True, metavar=r,
+    model_args.add_argument('--resolution', type=int, required=not is_sample, metavar=r if not is_sample else o, default=None,
                             help='resolution of images to generate')
-    model_args.add_argument('--model_channels', type=int, required=True, metavar=r,
+    model_args.add_argument('--model_channels', type=int, required=not is_sample, metavar=r if not is_sample else o, default=None,
                             help='number of model channels to start with')
-    model_args.add_argument('--channel_mult', type=str, required=True, metavar=r,
+    model_args.add_argument('--channel_mult', type=str, required=not is_sample, metavar=r if not is_sample else o, default=None,
                             help='model channel multipliers')
-    model_args.add_argument('--num_res_blocks', type=int, required=True, metavar=r,
+    model_args.add_argument('--num_res_blocks', type=int, required=not is_sample, metavar=r if not is_sample else o, default=None,
                             help='number of residual blocks to use in each channel mult layer')
-    model_args.add_argument('--attention_resolutions', type=str, required=True, metavar=r,
+    model_args.add_argument('--attention_resolutions', type=str, required=not is_sample, metavar=r if not is_sample else o, default=None,
                             help='which resolutions to apply attention')
     model_args.add_argument('--num_classes', type=int, required=False, default=None, metavar=o,
                             help='number of classes to use for conditional model. defaults to unconditional model')
-    model_args.add_argument('--dropout', type=float, required=not is_sample, default=0.0, metavar=o if is_sample else r,
+    model_args.add_argument('--dropout', type=float, required=not is_sample, default=0.0, metavar=r if not is_sample else o,
                             help='dropout probability')
     model_args.add_argument('--in_channels', type=int, required=False, default=3, metavar=o,
                             help='number of channels to input to model. defaults to 3')
@@ -116,11 +118,11 @@ def make_argparser(prog):
 
     # Diffusion args
     diff_args = parser.add_argument_group('diffusion arguments', 'arguments to determine diffusion/denoising process')
-    diff_args.add_argument('--rescaled_num_steps', type=int, required=True, metavar=r,
+    diff_args.add_argument('--rescaled_num_steps', type=int, required=not is_sample, metavar=r if not is_sample else o, default=None,
                            help='number of diffusion timesteps to rescale setup to use')
-    diff_args.add_argument('--beta_schedule', type=str, required=True, metavar=r,
+    diff_args.add_argument('--beta_schedule', type=str, required=not is_sample, metavar=r if not is_sample else o, default=None,
                            help='schedule to use for noise variances. can be \'linear\', \'cosine\', or \'constant\'')
-    diff_args.add_argument('--sampling_var_type', type=str, required=True, metavar=r,
+    diff_args.add_argument('--sampling_var_type', type=str, required=not is_sample, metavar=r if not is_sample else o, default=None,
                            help='method to use for learning sampling variances. can be \'small\', \'large\', '
                                 '\'learned\', or \'learned_interpolation\'')
     diff_args.add_argument('--use_ddim', required=False, default=False, action='store_true',
@@ -168,6 +170,30 @@ def get_dicts_from_args(args):
     assert (diff_args['guidance_method'] == 'classifier') == (other_args['classifier_path'] is not None)
     if other_args['classifier_path'] is not None:
         raise NotImplementedError('i have not yet implemented a noisy classifier, sorry')
+    
+    # load default model and diffusion args
+    if other_args.__contains__('custom'): # if we are in sampling mode using a custom model
+        if other_args['custom']:
+            if not model_args['resolution'] or not model_args['model_channels'] or not model_args['channel_mult'] or not model_args['num_res_blocks'] or not model_args['attention_resolutions'] \
+                or not diff_args['rescaled_num_steps'] or not diff_args['sampling_var_type'] or not diff_args['beta_schedule']:
+                raise argparse.ArgumentError('if the model is custom, all the configuration things must be specified.')
+        else:
+            path = other_args['model_path']
+            if path.__contains__('64x64'):
+                m = OPENAI_64_MODEL_ARGS; d = OPENAI_64_DIFFUSION_ARGS
+            elif path.__contains__('128x128'):
+                m = OPENAI_128_MODEL_ARGS; d = OPENAI_128_DIFFUSION_ARGS
+            elif path.__contains__('256x256'):
+                m = OPENAI_256_MODEL_ARGS; d = OPENAI_256_DIFFUSION_ARGS
+            elif path.__contains__('EMNIST'):
+                m = EMNIST_MODEL_ARGS; d = EMNIST_DIFFUSION_ARGS
+            else:
+                raise NotImplementedError(path, 'this is not a default model')
+            model_args.update(m)
+            diff_args.update(d)
+            if other_args.__contains__('labels') and len(other_args['labels']) > 0:
+                other_args['labels'] = [int(i) for i in other_args['labels'].split('/')]
+            return other_args, model_args, diff_args
 
     # Split strings for attention resolutions, channel multipliers, and labels
     if other_args.__contains__('labels') and len(other_args['labels']) > 0:

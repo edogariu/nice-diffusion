@@ -1,6 +1,7 @@
 __pycache__
+/*__pycache__
+env
 .idea
-samples
-superresolution
+checkpoints
 models
 .DS_Store

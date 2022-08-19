@@ -6,12 +6,15 @@ import torch
 import torch.nn.functional as F
 import matplotlib.pyplot as plt
 
-from utils import make_argparser, get_dicts_from_args, imshow
-from diff_model import DiffusionModel
-from diffusion import Diffusion
+# import matplotlib; matplotlib.use('tkagg')  # only needed for MacOSX Big Sur
+
+from nicediffusion.utils import make_argparser, get_dicts_from_args, imshow
+from nicediffusion.model import DiffusionModel
+from nicediffusion.diffusion import Diffusion
+from nicediffusion.default_args import *
 
 def main():
-    # Parse command lisne arguments
+    # Parse command line arguments
     for _ in range(len(sys.argv)):
         temp = sys.argv.pop(0)
         for arg in temp.split(' '):

@@ -1,15 +1,9 @@
 import torch
 import torch.optim as optim
-from torch.utils.data import DataLoader
-from torchvision.datasets import EMNIST
-import torchvision.transforms as transforms
 import numpy as np
 from matplotlib import pyplot as plt
 
-from utils import Rescale, cycle, grab_checkpoint
-from diff_model import DiffusionModel
-from diffusion import Diffusion
-
+from .diffusion import Diffusion
 
 # ADD SMARTER BETA SCHEDULE SAMPLING
 # ADD DISTRIBUTED TRAINING WITH TORCH.DIST
@@ -103,7 +97,7 @@ class Trainer:
             running_loss += loss
 
             # update EMA -- ema <= rate * ema + (1 - rate) * current
-            for name, param in model.named_parameters():
+            for name, param in self.model.named_parameters():
                 self.ema_params[name].detach().mul_(self.ema_rate).add_(param.data, alpha=(1 - self.ema_rate))
 
             if self.print_every is not None and step % self.print_every == 0:
@@ -145,48 +139,3 @@ class Trainer:
         torch.save(self.ema_params, 'checkpoints/{}_ema_params.pt'.format(step))
         print('Saved checkpoint!')
         pass
-
-
-if __name__ == '__main__':
-    # ------------------------------------------------------------------------------------------------------------------
-    # HYPERPARAMETERS
-    # ------------------------------------------------------------------------------------------------------------------
-    # torch.manual_seed(0)
-    CONDITIONAL = True
-    DIFFUSION_ARGS = {'rescaled_num_steps': 1000, 'original_num_steps': 1000, 'use_ddim': False, 'ddim_eta': 0.0,
-                      'beta_schedule': 'cosine', 'sampling_var_type': 'learned_interpolation', 'classifier': None,
-                      'guidance_method': 'classifier_free', 'guidance_strength': 0.5, 'loss_type': 'hybrid'}
-    MODEL_ARGS = {'resolution': 28, 'attention_resolutions': (7, 14), 'channel_mult': (1, 2, 4),
-                  'num_heads': 4, 'in_channels': 1, 'out_channels': 2, 'model_channels': 64,
-                  'num_res_blocks': 2, 'split_qkv_first': True, 'dropout': 0.05,
-                  'resblock_updown': True, 'use_adaptive_gn': True, 'num_classes': 26 if CONDITIONAL else None}
-
-    BATCH_SIZE = 468
-    LR = 0.00016
-    WEIGHT_DECAY = 0.001
-
-    ITERATIONS = 1500
-    SAMPLE_EVERY = None
-    PRINT_EVERY = 10
-    SAVE_EVERY = 100
-
-    GRAD_ACCUMULATION = 1
-
-    # CHECKPOINT = grab_checkpoint(20000)
-    CHECKPOINT = (None, None, None, None)
-    # ------------------------------------------------------------------------------------------------------------------
-
-    if DIFFUSION_ARGS['guidance_method'] == 'classifier_free':
-        MODEL_ARGS['num_classes'] += 1
-
-    model = DiffusionModel(**MODEL_ARGS, use_grad_checkpoints=True)
-    print('Model has {} parameters'.format(sum(p.numel() for p in model.parameters())))
-
-    transform = transforms.Compose([transforms.ToTensor(), Rescale()])
-    train_data = EMNIST(root='datasets/', train=True, download=False, transform=transform, split='letters')
-    loader = cycle(DataLoader(train_data, batch_size=BATCH_SIZE, drop_last=True, num_workers=4))
-    trainer = Trainer(model=model, diffusion_args=DIFFUSION_ARGS, dataloader=loader, ema_rate=0.9999,
-                      batch_size=BATCH_SIZE, lr=LR, weight_decay=WEIGHT_DECAY,
-                      iterations=ITERATIONS, sample_every=SAMPLE_EVERY, print_every=PRINT_EVERY, save_every=SAVE_EVERY,
-                      grad_accumulation=GRAD_ACCUMULATION, checkpoint=CHECKPOINT)
-    trainer.train()
