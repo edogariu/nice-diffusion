@@ -5,7 +5,7 @@ setup(
     version='0.1.0',
     author='Evan Dogariu',
     author_email='eadogariu@aol.com / edogariu@princeton.edu',
-    packages=['nicediffusion'],
+    packages=['nicediffusion', 'nicediffusion.superresolution'],
     scripts=['scripts/sample.py', 'scripts/train.py'],
     url='http://pypi.python.org/pypi/nicediffusion/',
     license='LICENSE.txt',
