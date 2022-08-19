@@ -50,6 +50,8 @@ Take a look at the training script in `scripts/train.py`. I haven't yet put toge
 Just get out there and have fun :)
   
 ## Planned additions:
+  - add patience, validation, etc. for Trainer (basically just clean it up)
+  - add proper evaluation metrics
   - will set up cmd line args for train script
   - will add stuff to train a noisy classifier so that classifier-based sampling guidance can actually be used
   - will add distributed training to allow cloud training
