@@ -24,9 +24,9 @@ Here is a list of other arguments to pass when sampling one of these pre-trained
   - `--num_samples [INT] (required)`: replace [INT] with number of batches to generate. total number of samples made will be batch_size * num_samples
   - `-w (optional)`: include this to print wordy updates of the sampling progress. defaults to silence.
   - `--save_path [DIRECTORY] (optional)`: replace [DIRECTORY] with relative path to directory to save samples in. defaults to displaying output
-  - `--upsample (optional)`: include this to upsample samples by 4x before displaying/saving (make sure you have the ESRGAN state dict at `models/RealESRGAN_x4plus.pth`. defaults to no upsampling
+  - `--upsample (optional)`: include this to upsample samples by 4x before displaying/saving (make sure you have the ESRGAN state dict at `models/RealESRGAN_x4plus.pth`). defaults to no upsampling
   - `--labels [X/Y/Z/...] (optional)`: replace [X/Y/Z/...] with '/'-separated list of labels to use. list must be num_samples long (for example, to create 3 samples with labels 1, 2, and 3 respectively, add `--labels 1/2/3`). defaults to random labels
-  - `--cpu (optional)`: include this to force the sampler to use the cpu. this is useful if encountering cuda memory errors. defaults to autodetecting devicee
+  - `--cpu (optional)`: include this to force the sampler to use the cpu. this is useful if encountering cuda memory errors. defaults to autodetecting device
 
 The use of upsampling requires that the [RealESRGAN_x4plus.pth](https://download1641.mediafire.com/gpmb5azvul0g/6o6hazgj2h7tlsb/RealESRGAN_x4plus.pth) file is downloaded and located in the `models/` folder.
 
