@@ -12,6 +12,17 @@ Implemented improvements over the seminal Diffusion model (Ho et al., Denoising 
   - DDIM sampling: (Song et al., Denoising Diffusion Implicit Models, https://arxiv.org/pdf/2010.02502.pdf)
   - Upscaling after sampling: (Wang et al., Real-ESRGAN: Training Real-World Blind Super-Resolution with Pure Synthetic Data, https://arxiv.org/pdf/2107.10833.pdf)
 
+## Sample Outputs 
+### Handwritten Letters 
+The Letter A             |  The Letter B          | The Letter C
+:-------------------------:|:-------------------------:|:-------------------------:
+![](resources/a.jpg)  |  ![](resources/b.jpg) | ![](resources/c.jpg)
+
+### ImageNet Images
+The Letter A             |  The Letter B          | The Letter C
+:-------------------------:|:-------------------------:|:-------------------------:
+![](resources/a.jpg)  |  ![](resources/b.jpg) | ![](resources/c.jpg)
+
 # How to Use
 To install the package, clone the repository (duh), cd into `nice-diffusion/`, and execute `pip3 install .`. The rest just works. If you don't wish to upsample ever, you will be able to save installation time by commenting out the `basicsr` requirement from `setup.py`. Once you have the package, you can simply import it elsewhere. Two scripts are located in `scripts/` to show how to use the package, and are described below.
 
