@@ -16,12 +16,12 @@ Implemented improvements over the seminal Diffusion model (Ho et al., Denoising 
 ### Handwritten Letters 
 The Letter A             |  The Letter B          | The Letter C
 :-------------------------:|:-------------------------:|:-------------------------:
-![](resources/a.jpg)  |  ![](resources/b.jpg) | ![](resources/c.jpg)
+<img src="resources/a.jpg" height="256" width="256">  |  <img src="resources/b.jpg" height="256" width="256"> | <img src="resources/c.jpg" height="256" width="256">
 
 ### ImageNet Images
-The Letter A             |  The Letter B          | The Letter C
+Golf Cart             |  Grand Piano          | Wine Bottle
 :-------------------------:|:-------------------------:|:-------------------------:
-![](resources/a.jpg)  |  ![](resources/b.jpg) | ![](resources/c.jpg)
+<img src="resources/golf cart.jpg">  |  <img src="resources/piano.jpg"> | <img src="resources/wine.jpg">
 
 # How to Use
 To install the package, clone the repository (duh), cd into `nice-diffusion/`, and execute `pip3 install .`. The rest just works. If you don't wish to upsample ever, you will be able to save installation time by commenting out the `basicsr` requirement from `setup.py`. Once you have the package, you can simply import it elsewhere. Two scripts are located in `scripts/` to show how to use the package, and are described below.
